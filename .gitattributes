@@ -1,0 +1,23 @@
+# Line endings are LF everywhere, in the repository *and* in working copies.
+#
+# Not a style preference: plan provenance hashes source files byte for byte
+# (`engine_source_sha256`, `notebook_generator_sha256`, the candidate manifests),
+# and the generator tests compare a freshly built notebook against the stored
+# one. A CRLF checkout — which `core.autocrlf=true` produces on Windows by
+# default — changes those hashes and fails the tests without any file having
+# actually changed. `eol=lf` pins the working copy so the hashes hold on every
+# platform.
+* text=auto eol=lf
+
+# The repository's own PowerShell hooks follow the platform convention; nothing
+# hashes them.
+*.ps1 text eol=crlf
+
+# Binary artefacts (most should never be committed anyway — belt and braces)
+*.png binary
+*.jpg binary
+*.webp binary
+*.woff2 binary
+*.parquet binary
+*.onnx binary
+*.gguf binary

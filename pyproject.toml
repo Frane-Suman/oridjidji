@@ -1,0 +1,148 @@
+[project]
+name = "oridjidji"
+version = "1.0.0"
+description = "Oriđiđi — estimates the probability that a Croatian text was machine-generated"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [{ name = "Frane Suman" }]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["croatian", "machine-generated-text", "detection", "nlp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: Croatian",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Kept deliberately small: everything needed to serve a probability, and nothing that only
+# the training or evaluation pipeline used. The model runtimes are extras, so the browser
+# test suite installs neither torch nor llama.cpp.
+dependencies = [
+    "pydantic>=2.7",
+    "pydantic-settings>=2.2",
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    # Pure-Python hunspell reader for the hr_HR dictionary.
+    "spylls>=0.1.7",
+    # Language gate. 2.2.0 requires Python >=3.12 and this project pins 3.11.
+    "lingua-language-detector>=2.0,<2.2",
+    # The calibration layer fits a temperature, a Platt map or an isotonic map; scipy
+    # arrives with it. Standard implementations are appropriate here - the detector
+    # algorithms themselves are written out explicitly rather than imported.
+    "scikit-learn>=1.5",
+    "fastapi>=0.115",
+    "jinja2>=3.1",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# Needed to actually run the server.
+serve = ["uvicorn[standard]>=0.30"]
+
+# Basic mode. Required to score anything: the encoder is served through
+# optimum.onnxruntime, which needs torch for its tensors even though the artefact itself
+# is an ONNX graph.
+encoder = [
+    "torch>=2.4",
+    "transformers>=4.51",
+    "optimum[onnxruntime]>=1.20",
+    # optimum.onnxruntime.quantization imports this and nothing else pulls it in.
+    "ml-dtypes>=0.5",
+]
+
+# Advanced mode: the shared observer/performer pair behind Binoculars and Fast-DetectGPT.
+# Absent, the statistical agents report as unavailable and Basic continues to answer.
+backbone = [
+    "torch>=2.4",
+    "transformers>=4.51",
+    # Gemma's tokenizer is built from a sentencepiece model; without this
+    # AutoTokenizer.from_pretrained fails after the weights have already downloaded.
+    "sentencepiece>=0.2",
+    # Official pre-built CPU wheel; published for Windows only.
+    "llama-cpp-python==0.3.35; sys_platform == 'win32'",
+]
+
+# Morphosyntactic feature family. Rarely wanted: the served feature set runs without it.
+morphology = ["classla==2.2.1"]
+
+[[tool.uv.index]]
+name = "llama-cpp-cpu"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+llama-cpp-python = { index = "llama-cpp-cpu" }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2",
+    "hypothesis>=6.100",
+    # The browser suite drives the real application against model doubles.
+    "playwright==1.55.0",
+    "httpx>=0.27",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+    "types-pyyaml>=6.0",
+]
+
+[project.scripts]
+oridjidji = "oridjidji.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/oridjidji"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+addopts = "-ra"
+markers = [
+    "unit: fast tests, no model downloads, no network",
+    "integration: cross-module tests with stub models",
+    "slow: anything that downloads models or takes >30 s",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["*.md", ".pytest-*", ".pytest_*", ".tmp"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"] # line length is enforced by the formatter
+
+[tool.ruff.lint.per-file-ignores]
+# Wordlists read best as columnar multiline strings, not 150-element literals.
+"src/oridjidji/features/wordlists.py" = ["SIM905"]
+
+[tool.mypy]
+strict = true
+files = ["src/oridjidji"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# Third-party libraries without type stubs. Each is wrapped behind a thin, fully typed
+# adapter in this codebase, so the boundary stays narrow.
+module = [
+    "spylls.*",
+    "lingua.*",
+    "classla.*",
+    "sklearn.*",
+    "scipy.*",
+    "torch.*",
+    "transformers.*",
+    "optimum.*",
+    "onnxruntime.*",
+]
+ignore_missing_imports = true
+# Keep these libraries opaque. transformers 4.57 ships enough typing for mypy to follow it,
+# at which point every partially annotated from_pretrained trips --strict's
+# disallow_untyped_calls - thirteen errors from an upgrade that changed no behaviour.
+follow_imports = "skip"

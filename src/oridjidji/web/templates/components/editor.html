@@ -1,0 +1,57 @@
+<section class="pane editor" aria-labelledby="editor-heading" x-show="state === 'idle'"
+  data-testid="editor-pane">
+  <h2 id="editor-heading" class="eyebrow">{{ t("ui_editor_label") }}</h2>
+  <label class="visually-hidden" for="tekst">{{ t("ui_editor_label") }}</label>
+  <textarea id="tekst" data-testid="editor" x-model="text" placeholder="{{ t('ui_editor_placeholder') }}"
+    lang="hr" spellcheck="true":readonly="running"
+:aria-describedby="running ? 'word-gate editor-readonly': 'word-gate'"
+    @keydown.ctrl.enter.prevent="analyse()" @keydown.meta.enter.prevent="analyse()"></textarea>
+  <p id="editor-readonly" class="visually-hidden" x-show="running">{{ t("ui_editor_readonly") }}</p>
+  <div class="editor-meta">
+    <span class="data" data-wordcount x-text="wordCountLabel()"></span>
+    <span id="word-gate" class="visually-hidden" x-text="wordGateMessage()"></span>
+  </div>
+  <fieldset class="mode-picker">
+    <legend>{{ t("ui_mode_label") }}</legend>
+    <div class="mode-cards">
+      <label class="mode-card">
+        <input type="radio" data-testid="mode-basic" name="mode" value="osnovni" x-model="mode" @change="saveMode()":disabled="running" />
+        <span class="mode-card-copy"><strong>{{ t("ui_mode_basic") }}</strong>
+          <small>{{ t("ui_mode_basic_description") }}</small></span>
+      </label>
+      <label class="mode-card">
+        <input type="radio" data-testid="mode-advanced" name="mode" value="napredni" x-model="mode" @change="saveMode()":disabled="running" />
+        <span class="mode-card-copy"><strong>{{ t("ui_mode_advanced") }}</strong>
+          <small>{{ t("ui_mode_advanced_description") }}</small></span>
+      </label>
+    </div>
+  </fieldset>
+  <details class="editor-options">
+    <summary>{{ t("ui_additional_options") }}</summary>
+    <div class="editor-options-body">
+      <label for="domain-hint">{{ t("ui_domain_label") }}</label>
+      <select id="domain-hint" data-testid="domain" x-model="domainHint":disabled="running">
+        <option value="">{{ t("ui_domain_auto") }}</option>
+        <option value="academic">{{ t("ui_domain_academic") }}</option>
+        <option value="news">{{ t("ui_domain_news") }}</option>
+      </select>
+      <p class="field-help">{{ t("ui_domain_help") }}</p>
+      <label class="store-choice">
+        <input type="checkbox" data-testid="store-opt-in" x-model="storeText":disabled="running" />
+        <span>{{ t("ui_store_label") }}</span>
+      </label>
+      <p class="field-help">{{ t("ui_store_help") }}</p>
+    </div>
+  </details>
+  <div class="actions editor-actions">
+    <button type="button" data-testid="submit" class="btn btn-primary" @click="analyse()"
+:disabled="running || !canAnalyse()":aria-describedby="!canAnalyse() ? 'submit-reason': null">
+      {{ t("ui_editor_analyse") }}
+    </button>
+    <button type="button" class="btn btn-secondary" @click="clear()":disabled="running">
+      {{ t("ui_editor_clear") }}
+    </button>
+    <span class="hint">{{ t("ui_editor_shortcut") }}</span>
+  </div>
+  <p id="submit-reason" class="submit-reason" x-show="text.trim() && !running && !canAnalyse()" x-text="submitReason()"></p>
+</section>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Oriđiđi</title>
+  <defs>
+    <linearGradient id="signal" x1="8" y1="12" x2="55" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d81e34"/>
+      <stop offset="1" stop-color="#f5821f"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" fill="#ffffff"/>
+  <circle cx="34" cy="29" r="21" fill="none" stroke="url(#signal)" stroke-width="7" stroke-dasharray="1.5 2.6"/>
+  <circle cx="34" cy="29" r="13" fill="none" stroke="url(#signal)" stroke-width="4" stroke-dasharray="1 2.2"/>
+  <path d="M7 38 31 31 24 55 19 46 12 53 8 49 15 42Z" fill="#0b0b0c"/>
+</svg>

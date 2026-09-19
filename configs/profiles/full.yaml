@@ -1,0 +1,9 @@
+# Higher-fidelity profile for machines with more RAM. Still CPU-only.
+inference:
+  encoder_backend: torch-fp32
+  causal_backend: torch-fp16
+  # Same export directory as `lite`. Discovery prefers the INT8 export wherever one
+  # exists, in both profiles: `encoder_backend: torch-fp32` above is a declaration this
+  # profile does not yet honour, because serving un-exported safetensors would need a
+  # second inference path and there is no measurement saying it is worth one.
+  model_dir: data/processed/models

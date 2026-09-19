@@ -1,0 +1,10 @@
+<div class="rail rail--{{ zone }}">
+  <div class="rail-track" role="img" aria-label="{{ rail_label }}">
+    <div class="rail-interval"
+      style="clip-path: inset(0 {{ high_pct }}% 0 {{ low_pct }}%)"></div>
+    <div class="rail-marker" style="left: {{ estimate_pct }}%" aria-hidden="true"></div>
+  </div>
+  <div class="rail-scale" aria-hidden="true">
+    <span>{{ t("ui_result_scale_start") }}</span><span>{{ t("ui_result_scale_end") }}</span>
+  </div>
+</div>

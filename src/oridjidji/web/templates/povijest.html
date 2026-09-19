@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ t("ui_history_title") }} · Oriđiđi{% endblock %}
+{% block content %}
+<div class="history-page" x-data="historyPage({{ history_config_json }})" x-init="load()">
+  <header class="page-header">
+    <p class="eyebrow">{{ t("ui_tagline") }}</p>
+    <h1>{{ t("ui_history_title") }}</h1>
+    <p>{{ t("ui_history_intro") }}</p>
+  </header>
+  <form class="history-filters" data-testid="history-filters" @submit.prevent="load()" aria-labelledby="history-filters-title">
+    <h2 id="history-filters-title">{{ t("ui_history_filters") }}</h2>
+    <label>{{ t("ui_history_filter_mode") }}
+      <select x-model="filters.mode"><option value="">{{ t("ui_history_filter_all") }}</option>
+        <option value="osnovni">{{ t("ui_mode_basic") }}</option><option value="napredni">{{ t("ui_mode_advanced") }}</option></select>
+    </label>
+    <label>{{ t("ui_history_filter_verdict") }}
+      <select x-model="filters.verdict"><option value="">{{ t("ui_history_filter_all") }}</option>
+        {% for value, label in verdict_options %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+    </label>
+    <label>{{ t("ui_history_filter_domain") }}
+      <select x-model="filters.domain_hint"><option value="">{{ t("ui_history_filter_all") }}</option>
+        <option value="academic">{{ t("ui_domain_academic") }}</option><option value="news">{{ t("ui_domain_news") }}</option></select>
+    </label>
+    <label>{{ t("ui_history_filter_status") }}
+      <select x-model="filters.status"><option value="">{{ t("ui_history_filter_all") }}</option>
+        {% for value, label in status_options %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+    </label>
+    <div class="actions"><button class="btn btn-primary" type="submit">{{ t("ui_history_apply") }}</button>
+      <a class="btn btn-secondary":href="exportUrl()">{{ t("ui_history_export") }}</a></div>
+  </form>
+  <p x-show="loading" role="status">{{ t("ui_history_loading") }}</p>
+  <p x-show="!loading && !errorMessage && rows.length === 0">{{ t("ui_history_empty") }}</p>
+  <p x-show="errorMessage" class="error" role="alert" x-text="errorMessage"></p>
+  <ol class="history-list" x-show="rows.length">
+    <template x-for="row in rows":key="row.run_id">
+      <li class="history-card">
+        <div><p class="eyebrow" x-text="label(config.statusLabels, row.status)"></p>
+          <h2 x-text="label(config.verdictLabels, row.verdict)"></h2></div>
+        <dl><dt>{{ t("ui_history_created") }}</dt><dd x-text="formatDate(row.created_at)"></dd>
+          <dt>{{ t("ui_history_mode") }}</dt><dd x-text="label(config.modeLabels, row.mode)"></dd>
+          <dt>{{ t("ui_history_domain") }}</dt><dd x-text="label(config.domainLabels, row.domain_hint)"></dd></dl>
+        <a class="btn btn-secondary":href="'/povijest/' + encodeURIComponent(row.run_id)">{{ t("ui_history_open") }}</a>
+      </li>
+    </template>
+  </ol>
+  <section class="notice" aria-labelledby="history-notice-heading">
+    <h2 id="history-notice-heading" class="eyebrow">{{ t("limitations_title") }}</h2>
+    <p>{{ t("ui_notice_statistical") }}</p>
+    <p>{{ t("ui_notice_no_sanction") }}</p>
+    <p>{{ t("ui_notice_language_bias") }}</p>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script defer src="/static/js/alpine.min.js"></script>{% endblock %}

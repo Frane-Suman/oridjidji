@@ -1,0 +1,7 @@
+<section class="notice" aria-labelledby="{{ notice_id|default('notice-heading') }}">
+  <h3 id="{{ notice_id|default('notice-heading') }}" class="eyebrow">{{ t("limitations_title") }}</h3>
+  {% for sentence in notice %}<p>{{ sentence }}</p>{% endfor %}
+  {% if limitations %}<ul class="limitations">
+    {% for item in limitations %}<li>{{ item }}</li>{% endfor %}
+  </ul>{% endif %}
+</section>

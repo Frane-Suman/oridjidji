@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+htmlcov/
+.coverage
+
+# Secrets. install.ps1 writes the Hugging Face token here.
+.env
+
+# Model weights and downloaded data. The installer fills these; nothing here is committed.
+/models/
+/data/
+*.gguf
+*.onnx
+*.safetensors
+*.pt
+*.pth
+
+# OS and editor noise
+Thumbs.db
+.DS_Store

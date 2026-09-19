@@ -1,0 +1,53 @@
+<section class="assessment" aria-labelledby="{{ result_id|default('result-heading') }}">
+  {% if effective_mode_label %}
+  <p class="executed-mode eyebrow">
+    {{ effective_mode_line }}{% if requested_mode_label and effective_mode_label != requested_mode_label %}<br />{{ requested_mode_line }}{% endif %}
+  </p>
+  {% endif %}
+  <h2 id="{{ result_id|default('result-heading') }}" data-testid="result-heading" class="headline" tabindex="-1">{{ headline }}</h2>
+
+  {% if runtime_status == "degraded_basic" %}
+  <section class="runtime-notice runtime-notice--fallback" aria-labelledby="{{ result_id|default('result-heading') }}-fallback">
+    <h3 id="{{ result_id|default('result-heading') }}-fallback">{{ t("ui_runtime_fallback_title") }}</h3>
+    <p>{{ t("advanced_degraded_notice") }}</p>
+  </section>
+  {% elif runtime_status == "advanced_unavailable" %}
+  <section class="runtime-notice runtime-notice--unavailable" aria-labelledby="{{ result_id|default('result-heading') }}-unavailable">
+    <h3 id="{{ result_id|default('result-heading') }}-unavailable">{{ t("ui_runtime_unavailable_title") }}</h3>
+    <p>{{ t("ui_runtime_unavailable_body") }}</p>
+  </section>
+  {% endif %}
+
+  <p class="estimate num">{{ estimate }}&nbsp;%</p>
+  <p class="interval num">{{ interval_line }}</p>
+  {% include "components/probability_rail.html" %}
+  <section class="result-interpretation" aria-labelledby="{{ result_id|default('result-heading') }}-interpretation">
+    <h3 id="{{ result_id|default('result-heading') }}-interpretation">{{ t("ui_interpretation_title") }}</h3>
+    <p>{{ interpretation_hr }}</p>
+  </section>
+  {% include "components/text_signal_map.html" %}
+
+  {% if warnings %}
+  <section class="warnings" aria-labelledby="{{ result_id|default('result-heading') }}-warnings">
+    <h3 id="{{ result_id|default('result-heading') }}-warnings">{{ t("ui_result_warnings") }}</h3>
+    <ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {% include "components/evidence_panels.html" %}
+  {% if runtime_status == "research_only" %}
+  <section class="runtime-notice runtime-notice--research" aria-labelledby="{{ result_id|default('result-heading') }}-research">
+    <h3 id="{{ result_id|default('result-heading') }}-research">{{ t("ui_runtime_research_title") }}</h3>
+    <p>{{ t("advanced_research_notice") }}</p>
+  </section>
+  {% endif %}
+  {% include "components/notice.html" %}
+
+  {% if show_actions|default(true) %}<div class="actions">
+    <button type="button" data-testid="copy-report" class="btn btn-secondary" data-copy-report @click="copyReport()">
+      {{ t("ui_result_copy") }}
+    </button>
+    <a href="/metoda">{{ t("ui_result_how") }}</a>
+    <span class="copy-status" role="status" aria-live="polite" x-text="copyStatus"></span>
+  </div>{% endif %}
+</section>

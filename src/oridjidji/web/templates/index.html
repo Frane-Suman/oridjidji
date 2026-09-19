@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div x-data="oridjidji({{ config_json }})" x-init="init()">
+  <header class="hero" x-show="state === 'idle'" x-cloak>
+    <h1>{{ t("ui_hero_title") }}</h1>
+    <p class="hero-subline">{{ t("ui_hero_subline") }}</p>
+  </header>
+  <div class="workbench">
+    {% include "components/editor.html" %}
+    <section class="pane result-pane" aria-labelledby="rezultat-heading":aria-busy="running"
+      x-show="state !== 'idle'" x-cloak data-testid="result-pane">
+      <div class="result-pane-header">
+        <h2 id="rezultat-heading" class="eyebrow">{{ t("ui_result_label") }}</h2>
+        <button type="button" class="btn btn-secondary result-back" @click="backToEditor()"
+          data-testid="back-to-editor">{{ t("ui_new_analysis") }}</button>
+      </div>
+      <div x-show="state === 'running'" x-cloak>{% include "components/prsten.html" %}</div>
+      <div class="error" x-show="state === 'error'" x-cloak role="alert">
+        <p x-text="errorMessage"></p>
+        <button type="button" class="btn btn-secondary" @click="analyse()">{{ t("ui_retry") }}</button>
+      </div>
+      <div x-show="state === 'done'" x-cloak data-result data-testid="result-container"></div>
+      <p class="sr-status" role="status" aria-live="polite" x-text="announcement"></p>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script defer src="/static/js/alpine.min.js"></script>{% endblock %}

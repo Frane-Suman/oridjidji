@@ -1,0 +1,8 @@
+# DEFAULT profile: no discrete GPU exists, so quantised CPU inference is
+# the norm, not a degraded mode. Backend values apply once the models are installed.
+inference:
+  encoder_backend: onnx-int8 # ONNX export of the selected encoder
+  causal_backend: gguf-q4 # shared observer/performer backbone
+  # Where `oridjidji train export` leaves its output. Absent on a fresh clone: the
+  # weights are not in git (CLAUDE.md), so the API must start without them and say so.
+  model_dir: data/processed/models

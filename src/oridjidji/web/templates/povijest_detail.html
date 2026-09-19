@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ t("ui_history_title") }} · Oriđiđi{% endblock %}
+{% block content %}
+<div class="history-detail" x-data="historyDetail({{ run_id_json }}, {{ history_config_json }})" x-init="load()">
+  <a href="/povijest">{{ t("ui_history_back") }}</a>
+  <p x-show="loading" role="status">{{ t("ui_history_loading") }}</p>
+  <p x-show="errorMessage" class="error" role="alert" x-text="errorMessage"></p>
+  <article x-show="row && !loading" x-cloak>
+    <header class="page-header"><p class="eyebrow" x-text="label(config.statusLabels, row.status)"></p>
+      <h1 x-text="config.runTitle.replace('{run_id}', row.run_id)"></h1></header>
+    <dl class="detail-summary">
+      <dt>{{ t("ui_history_created") }}</dt><dd x-text="formatDate(row.created_at)"></dd>
+      <dt>{{ t("ui_history_mode") }}</dt><dd x-text="label(config.modeLabels, row.mode)"></dd>
+      <dt>{{ t("ui_history_domain") }}</dt><dd x-text="label(config.domainLabels, row.domain_hint)"></dd>
+      <dt>{{ t("ui_history_verdict") }}</dt><dd x-text="label(config.verdictLabels, row.verdict)"></dd>
+      <dt>{{ t("ui_history_status") }}</dt><dd x-text="label(config.statusLabels, row.status)"></dd>
+      <dt>{{ t("ui_history_probability") }}</dt><dd class="num" x-text="percent(row.p_ai)"></dd>
+      <dt>{{ t("ui_history_interval") }}</dt><dd class="num" x-text="interval(row)"></dd>
+    </dl>
+    <section x-show="row.warnings && row.warnings.length"><h2>{{ t("ui_result_warnings") }}</h2>
+      <ul><template x-for="warning in row.warnings"><li x-text="warning"></li></template></ul></section>
+    <section x-show="row.agents && row.agents.length"><h2>{{ t("ui_agents_title") }}</h2>
+      <ul><template x-for="agent in (row.response?.agent_evidence?.length ? row.response.agent_evidence: row.agents)"><li>
+        <span x-text="agent.label_hr || label(config.agentLabels, agent.name)"></span>
+        <span class="num" x-text="agent.raw_score ?? agent.score ?? config.unknown"></span>
+      </li></template></ul></section>
+    <section x-show="row.timings"><h2>{{ t("ui_history_timings_title") }}</h2>
+      <dl class="detail-summary">
+        <dt>{{ t("ui_history_timing_total") }}</dt><dd class="num" x-text="milliseconds(row.timings?.total_ms)"></dd>
+      </dl>
+      <ul><template x-for="entry in Object.entries(row.timings?.agents_ms || {})":key="entry[0]"><li>
+        <span x-text="agentLabel(entry[0])"></span> —
+        <span class="num" x-text="milliseconds(entry[1])"></span>
+      </li></template></ul>
+    </section>
+    <section><h2>{{ t("ui_history_text_title") }}</h2>
+      <pre class="stored-text" x-show="row.text_stored" x-text="row.submitted_text"></pre>
+      <p x-show="!row.text_stored">{{ t("ui_history_text_absent") }}</p></section>
+    <section><h2>{{ t("ui_history_feedback_title") }}</h2>
+      <form data-testid="feedback-form" @submit.prevent="submitFeedback()">
+        <label>{{ t("ui_history_feedback_label") }}
+          <select x-model="feedback.expected_label" required>
+            <option value="human">{{ t("ui_history_feedback_human") }}</option>
+            <option value="ai">{{ t("ui_history_feedback_ai") }}</option>
+            <option value="edited">{{ t("ui_history_feedback_edited") }}</option>
+            <option value="unknown">{{ t("ui_history_feedback_unknown") }}</option>
+          </select></label>
+        <label>{{ t("ui_history_feedback_comment") }}
+          <textarea x-model="feedback.comment"></textarea></label>
+        <button class="btn btn-primary" type="submit">{{ t("ui_history_feedback_submit") }}</button>
+        <p role="status" x-text="feedbackStatus"></p>
+      </form>
+    </section>
+    <details class="runtime-details"><summary>{{ t("ui_history_runtime_title") }}</summary>
+      <pre x-text="JSON.stringify(row.runtime_identity, null, 2)"></pre></details>
+    <section class="notice" aria-labelledby="history-detail-notice" x-show="row.status === 'succeeded'">
+      <h2 id="history-detail-notice" class="eyebrow">{{ t("limitations_title") }}</h2>
+      <p>{{ t("ui_notice_statistical") }}</p>
+      <p>{{ t("ui_notice_no_sanction") }}</p>
+      <p>{{ t("ui_notice_language_bias") }}</p>
+      <ul class="limitations" x-show="row.response?.limitations_hr?.length">
+        <template x-for="limitation in row.response?.limitations_hr || []"><li x-text="limitation"></li></template>
+      </ul>
+    </section>
+  </article>
+</div>
+{% endblock %}
+{% block scripts %}<script defer src="/static/js/alpine.min.js"></script>{% endblock %}

@@ -1,0 +1,77 @@
+{% if agent_evidence or linguistic_evidence or explanations.top_features or explanations.shap %}
+<section class="evidence-panels" aria-labelledby="{{ result_id|default('result-heading') }}-evidence">
+  <h3 id="{{ result_id|default('result-heading') }}-evidence">{{ t("ui_evidence_title") }}</h3>
+
+  {% if agent_evidence %}
+  <h4>{{ t("ui_agents_title") }}</h4>
+  <div class="table-scroll" tabindex="0">
+    <table class="agent-table">
+      <thead><tr>
+        <th scope="col">{{ t("ui_agent_name") }}</th>
+        <th scope="col">{{ t("ui_agent_status") }}</th>
+        <th scope="col">{{ t("ui_agent_score") }}</th>
+        <th scope="col">{{ t("ui_agent_contribution") }}</th>
+        <th scope="col">{{ t("ui_agent_latency") }}</th>
+        <th scope="col">{{ t("ui_agent_details") }}</th>
+      </tr></thead>
+      <tbody>
+      {% for agent in agent_evidence %}
+        <tr class="agent-row agent-row--{{ agent.status }}">
+          <th scope="row">{{ agent.label_hr }}</th>
+          <td>{{ agent.status_hr }}</td>
+          <td class="num">{{ agent.raw_score_hr }}</td>
+          <td class="num contribution contribution--{{ agent.contribution_sign }}">{{ agent.fusion_contribution_hr }}</td>
+          <td class="num">{{ agent.latency_hr }}</td>
+          <td>
+            <details>
+              <summary>{{ t("ui_agent_details") }}</summary>
+              <p class="agent-interpretation">{{ agent.interpretation_hr }}</p>
+              <p class="agent-method-note"><strong>{{ t("ui_agent_technical_context") }}:</strong> {{ agent.rationale_hr }}</p>
+              <dl class="agent-meta">
+                <dt>{{ t("ui_agent_direction") }}</dt><dd>{{ agent.direction_hr }}</dd>
+                <dt>{{ t("ui_agent_used") }}</dt><dd>{{ agent.participation_hr }}</dd>
+                {% if agent.coverage_hr %}<dt>{{ t("ui_agent_coverage") }}</dt><dd>{{ agent.coverage_hr }}</dd>{% endif %}
+              </dl>
+              {% if agent.operating_evidence %}
+              <p class="operating-note">{{ t("ui_agent_operating_note") }}</p>
+              <table class="operating-table">
+                <thead><tr><th>{{ t("ui_agent_operating_target") }}</th><th>{{ t("ui_agent_operating_value") }}</th>
+                  <th>{{ t("ui_agent_operating_fpr") }}</th><th>{{ t("ui_agent_operating_tpr") }}</th></tr></thead>
+                <tbody>{% for point in agent.operating_evidence %}<tr><td>{{ point.target_hr }}</td>
+                  <td>{{ point.value_hr }}</td><td>{{ point.fpr_hr }}</td><td>{{ point.tpr_hr }}</td></tr>{% endfor %}</tbody>
+              </table>
+              {% endif %}
+            </details>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if linguistic_evidence or explanations.top_features or explanations.shap %}
+  <section class="linguistic-evidence" aria-labelledby="{{ result_id|default('result-heading') }}-linguistic">
+    <h4 id="{{ result_id|default('result-heading') }}-linguistic">{{ t("ui_linguistic_title") }}</h4>
+    <p>{{ t("ui_linguistic_body") }}</p>
+    {% if linguistic_evidence %}
+      {% for agent in linguistic_evidence %}
+      <details>
+        <summary>{{ agent.label_hr }} · {{ agent.status_hr }}</summary>
+        <p class="agent-interpretation">{{ agent.interpretation_hr }}</p>
+        <p class="agent-method-note"><strong>{{ t("ui_agent_technical_context") }}:</strong> {{ agent.rationale_hr }}</p>
+      </details>
+      {% endfor %}
+    {% endif %}
+    {% if explanations.top_features or explanations.shap %}
+    <ul class="feature-list">
+      {% for feature in explanations.top_features + explanations.shap %}
+      <li><span>{{ feature.get("name", feature.get("feature", "")) }}</span>
+        <data>{{ feature.get("value", feature.get("contribution", "")) }}</data></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endif %}
+</section>
+{% endif %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ t("ui_review_title") }} · Oriđiđi{% endblock %}
+{% block content %}
+<p class="dev-banner">{{ t("ui_review_banner") }}</p>
+<header class="page-header"><h1>{{ t("ui_review_title") }}</h1></header>
+
+<section class="review-section" aria-labelledby="review-empty">
+  <h2 id="review-empty">{{ t("ui_review_empty") }}</h2>
+  <div class="pane"><p class="empty">{{ t("ui_empty_result") }}</p></div>
+</section>
+
+<section class="review-section" aria-labelledby="review-results">
+  <h2 id="review-results" class="visually-hidden">{{ t("ui_result_label") }}</h2>
+  <div class="review-grid">
+  {% for result in results %}
+    <div class="pane">
+    {% with
+      zone=result.zone, headline=result.headline, estimate=result.estimate,
+      estimate_pct=result.estimate_pct, interval_line=result.interval_line,
+      low=result.low, high=result.high, low_pct=result.low_pct, high_pct=result.high_pct,
+      rail_label=result.rail_label, basis=result.basis,
+      inconclusive_body=result.inconclusive_body, prediction_explanation=result.prediction_explanation,
+      notice=result.notice, limitations=result.limitations, warnings=result.warnings,
+      explanations=result.explanations,
+      agent_evidence=result.agent_evidence, linguistic_evidence=result.linguistic_evidence,
+      runtime_status=result.runtime_status,
+      requested_mode_label=result.requested_mode_label, effective_mode_label=result.effective_mode_label,
+      requested_mode_line=result.requested_mode_line, effective_mode_line=result.effective_mode_line,
+      interpretation_hr=result.interpretation_hr,
+      result_id="review-result-" ~ loop.index, notice_id="review-notice-" ~ loop.index,
+      show_actions=false
+    %}{% include "components/assessment.html" %}{% endwith %}
+    </div>
+  {% endfor %}
+  </div>
+</section>
+
+<section class="review-section" aria-labelledby="review-loading">
+  <h2 id="review-loading">{{ t("ui_review_loading") }}</h2>
+  <div class="pane" x-data='reviewProgress({{ t("ui_progress_preparing")|tojson }})'>
+    {% include "components/prsten.html" %}
+  </div>
+</section>
+
+<section class="review-section" aria-labelledby="review-errors">
+  <h2 id="review-errors">{{ t("ui_review_errors") }}</h2>
+  <div class="review-grid">{% for message in errors %}
+    <div class="pane"><div class="error" role="alert"><p>{{ message }}</p>
+      <button type="button" class="btn btn-secondary">{{ t("ui_retry") }}</button></div></div>
+  {% endfor %}
+    {% for key in ("ui_error_invalid_request", "ui_error_rate_limited", "ui_error_too_large") %}
+    <div class="pane"><div class="error" role="alert"><p>{{ t(key) }}</p>
+      <button type="button" class="btn btn-secondary">{{ t("ui_retry") }}</button></div></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script defer src="/static/js/alpine.min.js"></script>{% endblock %}

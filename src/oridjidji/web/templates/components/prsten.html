@@ -1,0 +1,44 @@
+<div class="ring-wrap">
+  <div class="progress-shell" role="progressbar":aria-valuetext="status":aria-label="status">
+    <svg class="ring" viewBox="0 0 400 400" aria-hidden="true">
+      <defs>
+        <radialGradient id="lens-highlight" cx="32%" cy="28%" r="55%">
+          <stop offset="0%" stop-color="var(--lens-highlight)" />
+          <stop offset="100%" stop-color="transparent" />
+        </radialGradient>
+        <radialGradient id="lens-falloff" cx="50%" cy="50%" r="50%">
+          <stop offset="55%" stop-color="transparent" />
+          <stop offset="100%" stop-color="var(--lens-falloff)" />
+        </radialGradient>
+      </defs>
+      <g data-ring-bands>
+        {% for agent in agents %}
+        <g class="ring-band" data-agent="{{ agent }}" data-index="{{ loop.index0 }}"
+:class="{ 'ring-band--failed': agentState('{{ agent }}') === 'failed',
+                    'ring-band--finished': agentState('{{ agent }}') === 'finished',
+                    'ring-band--started': agentState('{{ agent }}') === 'started' }"
+          x-show="activeAgents().includes($el.dataset.agent)">
+          {% for dot in ring_dots(loop.index0, agents|length) %}
+          <circle class="ring-dot" cx="{{ dot.cx }}" cy="{{ dot.cy }}" r="{{ dot.r }}"
+            fill="{{ dot.fill }}" fill-opacity="{{ dot.opacity }}" />
+          {% endfor %}
+        </g>
+        {% endfor %}
+      </g>
+      <circle cx="200" cy="200" r="190" fill="url(#lens-falloff)" />
+      <circle cx="200" cy="200" r="190" fill="url(#lens-highlight)" />
+    </svg>
+  </div>
+  <p class="status-line" data-status x-text="status"></p>
+  <p class="elapsed" data-elapsed x-text="elapsedLabel()"></p>
+  {% if agents %}
+  <ul class="legend">
+    {% for agent in agents %}
+    <li data-agent="{{ agent }}" x-show="activeAgents().includes($el.dataset.agent)">
+      <span>{{ agent_labels.get(agent, agent) }}</span>
+      <span class="data" x-text="agentStateLabel('{{ agent }}')"></span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>

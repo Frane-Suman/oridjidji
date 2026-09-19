@@ -19,3 +19,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This licence covers the source code in this repository.
+
+Third-party components keep their own licences, recorded in docs/LICENSES.md:
+
+  * Web fonts under SIL Open Font License 1.1, with the licence texts and
+    provenance stored beside them in src/oridjidji/web/static/fonts/.
+  * axe-core (tests/browser/vendor/axe.min.js) under the Mozilla Public
+    License 2.0.
+  * The Unicode confusables mapping in src/oridjidji/preprocessing/data/ is
+    derived from Unicode Technical Standard #39 and carries the Unicode
+    licence.
+
+Model weights are NOT covered by this licence and are NOT distributed in this
+repository:
+
+  * The fine-tuned encoder is published separately as a release artefact and is
+    derived from BERTic (classla/bcms-bertic), Apache-2.0.
+  * Gemma-2-2B, used by the optional Advanced mode, is governed by Google's
+    Gemma Terms of Use. The installer downloads it from Google's own repository
+    with your Hugging Face token and quantises it on your machine, so this
+    project never redistributes it. By installing Advanced mode you accept
+    those terms directly with Google.

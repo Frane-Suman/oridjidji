@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t("ui_method_title") }} · Oriđiđi{% endblock %}
+{% block content %}
+<article class="prose-page method-page">
+  <p class="eyebrow">{{ t("ui_tagline") }}</p>
+  <h1>{{ t("ui_method_title") }}</h1>
+  <p class="lede">{{ t("ui_method_intro") }}</p>
+
+  <div class="method-modes">
+    <section><h2>{{ t("ui_method_basic_title") }}</h2><p>{{ t("ui_method_basic_body") }}</p></section>
+    <section><h2>{{ t("ui_method_advanced_title") }}</h2><p>{{ t("ui_method_advanced_body") }}</p></section>
+  </div>
+
+  <section><h2>{{ t("ui_method_pipeline_title") }}</h2>
+    <ol class="method-steps">{% for step in method_steps %}<li>{{ step }}</li>{% endfor %}</ol>
+  </section>
+  <section><h2>{{ t("ui_method_probability_title") }}</h2><p>{{ t("ui_method_probability_body") }}</p></section>
+  <section><h2>{{ t("ui_method_runtime_states_title") }}</h2><p>{{ t("ui_method_runtime_states_body") }}</p></section>
+  <section><h2>{{ t("ui_method_data_title") }}</h2><p>{{ t("ui_method_data_body") }}</p></section>
+  <section><h2>{{ t("ui_method_privacy_title") }}</h2><p>{{ t("ui_method_privacy_body") }}</p></section>
+  <section><h2>{{ t("ui_method_limitations_title") }}</h2><p>{{ t("ui_method_limitations_body") }}</p></section>
+  <section><h2>{{ t("ui_method_references_title") }}</h2>
+    <ul><li>{{ t("ui_method_reference_encoder") }}</li>
+      <li>{{ t("ui_method_reference_statistical") }}</li>
+      <li>{{ t("ui_method_reference_conformal") }}</li></ul>
+  </section>
+
+  <section class="runtime-card">
+    <h2>{{ t("ui_method_runtime_title") }}</h2>
+    <dl>
+      <dt>{{ t("ui_method_min_words") }}</dt><dd class="num">{{ min_words }}</dd>
+      <dt>{{ t("ui_method_agents") }}</dt><dd>{{ agents|join(", ") if agents else t("ui_method_none") }}</dd>
+    </dl>
+    <details><summary>{{ t("ui_method_runtime_identity") }}</summary>
+      <ul class="identity-list">{% for name, version in model_versions.items() %}
+        <li><code>{{ name }}</code>: <code>{{ version }}</code></li>{% endfor %}</ul>
+    </details>
+  </section>
+  {% set notice_id = "method-notice" %}{% include "components/notice.html" %}
+</article>
+{% endblock %}

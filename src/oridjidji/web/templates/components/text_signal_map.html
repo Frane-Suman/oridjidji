@@ -1,0 +1,22 @@
+{% if explanations.token_heatmap %}
+<section class="text-signal-map" aria-labelledby="{{ result_id|default('result-heading') }}-text-signals">
+  <div class="signal-map-heading">
+    <div>
+      <h3 id="{{ result_id|default('result-heading') }}-text-signals">{{ t("ui_text_signal_title") }}</h3>
+      <p>{{ t("ui_text_signal_help") }}</p>
+    </div>
+    <div class="signal-key" aria-hidden="true">
+      <div class="signal-key-bar"></div>
+      <div class="token-legend">
+        <span>{{ t("ui_token_legend_low") }}</span><span>{{ t("ui_token_legend_high") }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="signal-document" lang="hr" tabindex="0"
+    aria-label="{{ t('ui_text_signal_document_label') }}">{%- for token in explanations.token_heatmap -%}
+    {%- if token.get("scored", false) -%}<mark class="signal-word signal-word--{{ token.get('strength', 'faint') }}"
+      title="{{ t('ui_text_signal_word_title', weight=token.get('weight_hr', '0,0')) }}">{{ token.get("text", "") }}</mark>
+    {%- else -%}<span class="signal-unscored">{{ token.get("text", "") }}</span>{%- endif -%}
+  {%- endfor -%}</div>
+</section>
+{% endif %}

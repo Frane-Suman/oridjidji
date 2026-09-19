@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="hr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>{% block title %}Oriđiđi{% endblock %}</title>
+    <link rel="icon" href="/static/img/oridjidji-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/css/tokens.css?v=20260913d" />
+    <link rel="stylesheet" href="/static/css/app.css?v=20260913p" />
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <a class="skip-link" href="#glavno">{{ t("ui_skip_link") }}</a>
+    <header class="masthead" data-sticky-header>
+      <a class="brand" href="/" aria-label="{{ t('ui_logo_alt') }}">
+        <span class="brand-logo-stage" aria-hidden="true">
+          <img class="brand-mark brand-logo-face brand-logo-face--front"
+            src="/static/img/oridjidji-logo-v2.webp"
+            alt="" width="126" height="94" />
+          <img class="brand-wordmark brand-logo-face brand-logo-face--back"
+            src="/static/img/oridjidji-wordmark.webp"
+            alt="" width="512" height="128" />
+        </span>
+      </a>
+      <nav class="primary-nav" aria-label="{{ t('ui_nav_label') }}">
+        <a href="/">{{ t("ui_nav_analyse") }}</a>
+        <a href="/povijest">{{ t("ui_nav_history") }}</a>
+        <a href="/metoda">{{ t("ui_nav_method") }}</a>
+      </nav>
+    </header>
+    <main id="glavno" tabindex="-1">{% block content %}{% endblock %}</main>
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

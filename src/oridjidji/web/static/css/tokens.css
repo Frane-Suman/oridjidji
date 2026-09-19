@@ -1,0 +1,263 @@
+/* Self-hosted Google Fonts subsets. Latin provides ASCII and Latin Extended provides
+   Croatian č, ć, đ, š and ž. All source font licences live beside the WOFF2 files. */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/archivo-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/archivo-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/archivo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-sans-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-mono-400-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-mono-500-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Oriđiđi design tokens: colour, type, space, materials and motion.
+
+   This file is the only place a literal value is allowed. Every other stylesheet consumes
+   these custom properties, and that is a checkable rule rather than a preference:
+   a hex code, an off-scale px, or a raw ms in component CSS means the value escaped the
+   system and a grep for literals will find it.
+
+   No dark-mode block, deliberately — results must photograph and print
+   identically for the thesis, and a screenshot whose meaning depends on the reader's OS
+   setting is not evidence of anything. */
+
+:root {
+  /* ---- ink & surfaces — cool and clinical, deliberately not warm cream ---- */
+  --ink: #0b0b0c;
+  --slate: #37505c;
+  --slate-300: #94a6b0; /* decorative / disabled only — 2.8:1, never body text */
+  --rule: #e2e6e9;
+  --paper: #f6f7f8;
+  --surface: #ffffff;
+  --masthead-surface: rgba(255, 255, 255, 0.82);
+  --masthead-blur: 14px;
+
+  /* ---- signal. DATA ONLY. Never decoration, never a button. ---- */
+  --signal-yellow: #f6bf3a;
+  --signal-red: #d81e34;
+  --signal-orange: #f5821f; /* fills only — 2.6:1 on white, fails 1.4.11 as text */
+  --orange-ink: #b85c00; /* the accessible orange: text, icons, 1px borders */
+
+  /* Interactive emphasis requested by the author. It is distinct from the measured
+     interval and appears only on controls and keyboard focus. */
+  --control-accent: #ca0b44;
+  --focus: #ca0b44;
+
+  /* ---- type ---- */
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+
+  --size-display-xl: 3rem; /* 48/52 — result headline */
+  --size-display-l: 2rem; /* 32/38 — page h1 */
+  --size-display-m: 1.5rem; /* 24/30 — section h2 */
+  --size-body-l: 1.125rem; /* 18/28 */
+  --size-body: 1rem; /* 16/26 */
+  --size-body-s: 0.875rem; /* 14/22 — the limitations notice FLOOR, never smaller */
+  --size-meta: 0.8125rem; /* 13/18 */
+  --size-eyebrow: 0.6875rem; /* 11/16 — uppercase mono labels */
+  --size-data-xl: 2.5rem; /* 40/44 — the probability number */
+  --size-data: 0.875rem; /* 14/20 — intervals, scores */
+
+  --leading-display-xl: 3.25rem;
+  --leading-display-l: 2.375rem;
+  --leading-display-m: 1.875rem;
+  --leading-body-l: 1.75rem;
+  --leading-body: 1.625rem;
+  --leading-body-s: 1.375rem;
+  --leading-meta: 1.125rem;
+  --leading-eyebrow: 1rem;
+  --leading-data-xl: 2.75rem;
+  --leading-data: 1.25rem;
+
+  --tracking-display-xl: -0.02em;
+  --tracking-display-l: -0.015em;
+  --tracking-display-m: -0.01em;
+  --tracking-eyebrow: 0.12em;
+  --tracking-data-xl: -0.01em;
+
+  /* ---- space & shape — 4 8 12 16 24 32 48 64 96 ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --radius-sm: 2px; /* inputs, buttons, chips */
+  --radius-md: 4px; /* cards, panels */
+  /* Nothing is pill-shaped; nothing is a circle except the ring mark. */
+
+  --grid-max: 1200px;
+  --workbench-stage: 52rem;
+  --page-pad: var(--space-6);
+  --hairline: 1px;
+
+  /* Line weights that carry meaning and therefore have to be nameable. The
+     underline pair is the specification's link rule; the hatch pair is the inconclusive band's
+     pattern, which is load-bearing because --signal-orange fails contrast as text. */
+  --focus-width: 2px;
+  --underline: 1px;
+  --underline-hover: 2px;
+  --marker-width: 2px;
+  --accent-bar: 3px;
+  --hatch-line: 1px;
+  --hatch-gap: 3px;
+
+  /* Component dimensions. Off the spacing scale on purpose — these size objects, not
+     gaps — but named, so a second ring cannot end up a different size by accident. */
+  --ring-size: 13rem;
+  --editor-min-height: 20rem;
+  --measure: 52ch;
+
+  /* NOTE: the 1024px breakpoint from the specification is NOT a token. Custom properties are not
+     usable inside @media queries, so the literal appears in app.css with this comment
+     pointing here. It is the one value the token system genuinely cannot hold. */
+
+  /* ---- Leća — paint only, ring only, never under text ---- */
+  --lens-highlight: rgba(255, 255, 255, 0.55); /* one specular arc at 315° */
+  --lens-falloff: rgba(11, 11, 12, 0.06); /* soft inner shading at ring centre */
+
+  /* ---- motion ---- */
+  --dur-press: 80ms;
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-ring: 640ms; /* one detector band filling */
+  --dur-hero-turn: 48s;
+  --dur-logo-flip: 560ms;
+
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Used on exactly one element in the product — the arrow landing on the rail —
+     because that is the moment the instrument settles. Overshoot anywhere else reads
+     as playfulness and undermines the register. */
+  --ease-arrow: cubic-bezier(0.34, 1.06, 0.64, 1);
+}
+
+/* Reduced motion: honour it by removing motion, not by shortening it. Nothing in this
+   product conveys meaning through movement alone — every transition reports an event
+   that is also stated in text — so removing all of it costs no information. */
+@media (prefers-reduced-motion: reduce) {
+:root {
+    --dur-press: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-ring: 0ms;
+    --dur-hero-turn: 0ms;
+    --dur-logo-flip: 0ms;
+  }
+}
+
+/* Reduced transparency: the lens falls back to flat fills. It carries no
+   information, so dropping it loses nothing. */
+@media (prefers-reduced-transparency: reduce) {
+:root {
+    --lens-highlight: transparent;
+    --lens-falloff: transparent;
+  }
+}
