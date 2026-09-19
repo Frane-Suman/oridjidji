@@ -45,9 +45,9 @@ TRAINED_MAX_TOKENS = 512
 #
 # Measured on the test split, same 96+96 records, same 160-token window:
 #
-#   variant AUROC TPR@1%FPR machine score range human median median ms
-#   onnx 0.9990 0.9792      [0.0133, 0.9980]      0.0022 472.7
-#   int8 0.9594 0.7188      [0.9970, 0.9979]      0.9970 461.9
+#   variant  AUROC    TPR@1%FPR   machine score range   human median   median ms
+#   onnx     0.9990   0.9792      [0.0133, 0.9980]      0.0022          472.7
+#   int8     0.9594   0.7188      [0.9970, 0.9979]      0.9970          461.9
 #
 # INT8 collapses the output range into the fourth decimal: every document, human ones
 # included, scores ~0.997. Ranking survives (AUROC 0.9594) but the probabilities do not,

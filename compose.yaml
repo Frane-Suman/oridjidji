@@ -1,7 +1,7 @@
 services:
   detector:
     build:
-      context:.
+      context: .
     environment:
       ORIDJIDJI_PROFILE: ${ORIDJIDJI_PROFILE:-lite}
     ports:
@@ -11,5 +11,5 @@ services:
       # candidate directory produced by finalize_advanced_candidate.py.
       - ${ORIDJIDJI_CANDIDATE_ROOT:-./data/processed/models/empty}:/models:ro
       - ${ORIDJIDJI_HISTORY_DIR:-./data/processed/history}:/models/history
-      -./data/lexicons:/models/data/lexicons:ro
+      - ./data/lexicons:/models/data/lexicons:ro
     restart: unless-stopped

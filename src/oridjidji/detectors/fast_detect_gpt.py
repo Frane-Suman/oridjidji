@@ -13,9 +13,9 @@ the model already tells you what it expected; you can compare what actually appe
 against that expectation analytically, in **one forward pass**, with no perturbations at
 all:
 
-    observed  = sum_t log p(x_t | x_<t)              what the text actually did
-    mu_t      = sum_v p_t(v) log p_t(v)              what the model expected of itself
-    var_t     = sum_v p_t(v) (log p_t(v))^2 - mu_t^2
+    observed  = sum_t  log p(x_t | x_<t)              what the text actually did
+    mu_t      = sum_v  p_t(v) log p_t(v)              what the model expected of itself
+    var_t     = sum_v  p_t(v) (log p_t(v))^2 - mu_t^2
     d         = (observed - sum_t mu_t) / sqrt(sum_t var_t)
 
 **HIGHER d means MORE LIKELY MACHINE — the opposite of Binoculars.** Text sampled from

@@ -29,7 +29,7 @@ def main() -> None:
             if name.endswith(ext) and ext not in wanted:
                 wanted[ext] = entry["download_url"]
     if set(wanted) != {".aff", ".dic"}:
-        raise SystemExit(f"Expected one.aff and one.dic at repo root, found: {sorted(wanted)}")
+        raise SystemExit(f"Expected one .aff and one .dic at repo root, found: {sorted(wanted)}")
 
     DEST.mkdir(parents=True, exist_ok=True)
     for ext, url in sorted(wanted.items()):

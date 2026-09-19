@@ -173,7 +173,7 @@ def inspect(
         typer.echo(json.dumps(payload, ensure_ascii=False, indent=1))
         return
     typer.echo(
-        f"words={n_words}  cold={cold['total_ms']:.1f} ms warm={warm['total_ms']:.1f} ms "
+        f"words={n_words}  cold={cold['total_ms']:.1f} ms  warm={warm['total_ms']:.1f} ms "
         f"(preprocess {warm['preprocess_ms']:.1f} + features {warm['features_ms']:.1f})"
     )
     for name in sorted(features):

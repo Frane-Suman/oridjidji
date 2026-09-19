@@ -192,7 +192,7 @@ def ellipsis_dots_per_kchar(doc: Document, ctx: FeatureContext) -> float:
 
 @feature("orthographic")
 def space_before_punct_per_kchar(doc: Document, ctx: FeatureContext) -> float:
-    """Spaces before,. ! ?;: per 1,000 characters.
+    """Spaces before , . ! ? ; : per 1,000 characters.
 
     Why: a purely human typing error; generator output is tokenizer-clean.
     Failure mode: French-convention quotations legitimately space some punctuation.

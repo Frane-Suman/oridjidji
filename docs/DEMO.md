@@ -110,9 +110,9 @@ the performance benchmark times, so the 0.413 s Basic figure quoted above is thi
 texts as `LIKELY_AI` in Basic mode. The most confident error is
 
 ```
-znanje_dabar_hr:thesis_4849 p_ai = 0.9990
-znanje_dabar_hr:thesis_69814 p_ai = 0.9990
-znanje_dabar_hr:thesis_15104 p_ai = 0.9940
+znanje_dabar_hr:thesis_4849      p_ai = 0.9990
+znanje_dabar_hr:thesis_69814     p_ai = 0.9990
+znanje_dabar_hr:thesis_15104     p_ai = 0.9940
 ```
 
 — genuine human Croatian theses the shipping detector is 99.4–99.9% certain are machine-written.

@@ -5,11 +5,11 @@ seed: 42
 # Minimum-length gate. DERIVED from the length curve in the project log,
 # re-measured 2026-09-04 on the retrained encoder and 634 calibration records (was 172):
 #
-#   words AUROC TPR@1%FPR TPR@5%FPR
-#      30 0.9594 0.6215 0.8360   <- what the registered rule returns
-#      50 0.9906 0.8612 0.9558
-#      75 0.9990 0.9968 0.9968
-#     100 0.9999 0.9968 1.0000   <- what ships
+#   words   AUROC    TPR@1%FPR   TPR@5%FPR
+#      30   0.9594      0.6215      0.8360   <- what the registered rule returns
+#      50   0.9906      0.8612      0.9558
+#      75   0.9990      0.9968      0.9968
+#     100   0.9999      0.9968      1.0000   <- what ships
 #
 # The registered rule — shortest bucket whose lower CI bound clears AUROC 0.90 — returns 30,
 # and it is applied as written. It is also an AUROC rule, and at 30 words AUROC reads a
