@@ -20,7 +20,7 @@
     <section x-show="row.warnings && row.warnings.length"><h2>{{ t("ui_result_warnings") }}</h2>
       <ul><template x-for="warning in row.warnings"><li x-text="warning"></li></template></ul></section>
     <section x-show="row.agents && row.agents.length"><h2>{{ t("ui_agents_title") }}</h2>
-      <ul><template x-for="agent in (row.response?.agent_evidence?.length ? row.response.agent_evidence: row.agents)"><li>
+      <ul><template x-for="agent in (row.response?.agent_evidence?.length ? row.response.agent_evidence : row.agents)"><li>
         <span x-text="agent.label_hr || label(config.agentLabels, agent.name)"></span>
         <span class="num" x-text="agent.raw_score ?? agent.score ?? config.unknown"></span>
       </li></template></ul></section>
@@ -28,7 +28,7 @@
       <dl class="detail-summary">
         <dt>{{ t("ui_history_timing_total") }}</dt><dd class="num" x-text="milliseconds(row.timings?.total_ms)"></dd>
       </dl>
-      <ul><template x-for="entry in Object.entries(row.timings?.agents_ms || {})":key="entry[0]"><li>
+      <ul><template x-for="entry in Object.entries(row.timings?.agents_ms || {})" :key="entry[0]"><li>
         <span x-text="agentLabel(entry[0])"></span> —
         <span class="num" x-text="milliseconds(entry[1])"></span>
       </li></template></ul>

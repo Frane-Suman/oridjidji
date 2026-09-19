@@ -1,5 +1,5 @@
 <div class="ring-wrap">
-  <div class="progress-shell" role="progressbar":aria-valuetext="status":aria-label="status">
+  <div class="progress-shell" role="progressbar" :aria-valuetext="status" :aria-label="status">
     <svg class="ring" viewBox="0 0 400 400" aria-hidden="true">
       <defs>
         <radialGradient id="lens-highlight" cx="32%" cy="28%" r="55%">
@@ -14,7 +14,7 @@
       <g data-ring-bands>
         {% for agent in agents %}
         <g class="ring-band" data-agent="{{ agent }}" data-index="{{ loop.index0 }}"
-:class="{ 'ring-band--failed': agentState('{{ agent }}') === 'failed',
+          :class="{ 'ring-band--failed': agentState('{{ agent }}') === 'failed',
                     'ring-band--finished': agentState('{{ agent }}') === 'finished',
                     'ring-band--started': agentState('{{ agent }}') === 'started' }"
           x-show="activeAgents().includes($el.dataset.agent)">

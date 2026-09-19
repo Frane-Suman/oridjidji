@@ -26,20 +26,20 @@
         {% for value, label in status_options %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
     </label>
     <div class="actions"><button class="btn btn-primary" type="submit">{{ t("ui_history_apply") }}</button>
-      <a class="btn btn-secondary":href="exportUrl()">{{ t("ui_history_export") }}</a></div>
+      <a class="btn btn-secondary" :href="exportUrl()">{{ t("ui_history_export") }}</a></div>
   </form>
   <p x-show="loading" role="status">{{ t("ui_history_loading") }}</p>
   <p x-show="!loading && !errorMessage && rows.length === 0">{{ t("ui_history_empty") }}</p>
   <p x-show="errorMessage" class="error" role="alert" x-text="errorMessage"></p>
   <ol class="history-list" x-show="rows.length">
-    <template x-for="row in rows":key="row.run_id">
+    <template x-for="row in rows" :key="row.run_id">
       <li class="history-card">
         <div><p class="eyebrow" x-text="label(config.statusLabels, row.status)"></p>
           <h2 x-text="label(config.verdictLabels, row.verdict)"></h2></div>
         <dl><dt>{{ t("ui_history_created") }}</dt><dd x-text="formatDate(row.created_at)"></dd>
           <dt>{{ t("ui_history_mode") }}</dt><dd x-text="label(config.modeLabels, row.mode)"></dd>
           <dt>{{ t("ui_history_domain") }}</dt><dd x-text="label(config.domainLabels, row.domain_hint)"></dd></dl>
-        <a class="btn btn-secondary":href="'/povijest/' + encodeURIComponent(row.run_id)">{{ t("ui_history_open") }}</a>
+        <a class="btn btn-secondary" :href="'/povijest/' + encodeURIComponent(row.run_id)">{{ t("ui_history_open") }}</a>
       </li>
     </template>
   </ol>

@@ -7,7 +7,7 @@
   </header>
   <div class="workbench">
     {% include "components/editor.html" %}
-    <section class="pane result-pane" aria-labelledby="rezultat-heading":aria-busy="running"
+    <section class="pane result-pane" aria-labelledby="rezultat-heading" :aria-busy="running"
       x-show="state !== 'idle'" x-cloak data-testid="result-pane">
       <div class="result-pane-header">
         <h2 id="rezultat-heading" class="eyebrow">{{ t("ui_result_label") }}</h2>

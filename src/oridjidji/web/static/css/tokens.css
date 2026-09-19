@@ -242,7 +242,7 @@
    product conveys meaning through movement alone — every transition reports an event
    that is also stated in text — so removing all of it costs no information. */
 @media (prefers-reduced-motion: reduce) {
-:root {
+  :root {
     --dur-press: 0ms;
     --dur-fast: 0ms;
     --dur-base: 0ms;
@@ -256,7 +256,7 @@
 /* Reduced transparency: the lens falls back to flat fills. It carries no
    information, so dropping it loses nothing. */
 @media (prefers-reduced-transparency: reduce) {
-:root {
+  :root {
     --lens-highlight: transparent;
     --lens-falloff: transparent;
   }
