@@ -1,6 +1,6 @@
 """`oridjidji serve` — M8's entry point, and its safety default (the specification, ETHICS.md).
 
-CLAUDE.md has said "`serve` arrives in M8" since M0 and it never did. The command itself is
+The project plan has said "`serve` arrives in M8" since M0 and it never did. The command itself is
 thin; what these tests pin is the part that is a decision rather than plumbing.
 
 **Localhost by default.** `ETHICS.md` and the specification are explicit that this is a research and

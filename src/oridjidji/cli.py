@@ -135,7 +135,7 @@ def inspect(
     Runs the pipeline twice: the first (cold) pass pays lazy model/lexicon loading,
     the second (warm) pass is the steady-state number the budget applies to.
 
-    COMPLEXITY BUDGET (CLAUDE.md, >50 lines): a dev tool that measures, formats and
+    COMPLEXITY BUDGET (>50 lines): a dev tool that measures, formats and
     prints. It is long because it has three output shapes (timing, features, z-scores)
     and two modes (text, JSON), not because it does three things.
 

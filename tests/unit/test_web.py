@@ -33,7 +33,7 @@ def client() -> TestClient:
     `create_app()` discovers whatever sits in `data/processed/models`, so once the M4
     checkpoint landed these tests silently began running real ONNX inference: the suite went
     from 22 s to 100 s and started depending on weights that are not in git. Unit tests mock
-    the model layer (CLAUDE.md), and this file is about the web layer, which holds no model
+    the model layer, and this file is about the web layer, which holds no model
     facts by construction. Detector behaviour is covered in `test_detector_serving.py`
     against a stub.
     """

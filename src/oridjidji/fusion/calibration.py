@@ -16,7 +16,7 @@ ECE binning and the Brier score are thesis-core and already implemented explicit
 `evaluation.metrics`; this module fits the transforms and applies the selection rule, and
 does not reimplement the metrics.
 
-COMPLEXITY BUDGET (CLAUDE.md, 392 lines). Three fitted transforms, their shared artefact,
+COMPLEXITY BUDGET (392 lines). Three fitted transforms, their shared artefact,
 and the out-of-fold selection that keeps the specification's ECE gate able to fire at all. The three
 belong together because they are chosen against each other — separating them would hide the
 comparison that is the module's actual output.

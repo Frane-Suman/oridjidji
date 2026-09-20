@@ -22,7 +22,7 @@ atypical of both classes at once. Both abstain, but they are different facts, an
 Implemented explicitly rather than imported: the specification names *conformal quantile computation and
 prediction-set construction* as thesis-core.
 
-COMPLEXITY BUDGET (CLAUDE.md, 307 lines). The quantiles, the prediction set, the versioned
+COMPLEXITY BUDGET (307 lines). The quantiles, the prediction set, the versioned
 artefact and the coverage reporting. They are one file because the guarantee only means
 something end to end: a quantile without its coverage check is a number, and the specification needs the
 abstention zone to carry evidence that it holds.

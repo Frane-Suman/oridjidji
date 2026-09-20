@@ -1,6 +1,6 @@
 """Croatian orthographic and human-error features (the specification, Appendix A).
 
-Ground truth for the linguistic claims: `.claude/skills/hr-linguistics/SKILL.md`.
+Ground truth for the linguistic claims: the project linguistic specification.
 Human-error features exploit an asymmetry: LLMs almost never make these mistakes,
 so their *absence* is (weak, cumulative) evidence of machine text. All rates are
 raw in M1; corpus-relative z-scores arrive with M2 statistics.
@@ -9,14 +9,14 @@ The AI-ism family lives in `aiism.py`. The split is the distinction the thesis
 argues: this file measures surface form and the mistakes *humans* make, that one
 measures habits *models* have.
 
-Complexity-budget note (CLAUDE.md): this file exceeds 300 lines because every feature
+Complexity-budget note: this file exceeds 300 lines because every feature
 carries its mandated what/Why/Failure-mode docstring — the bulk is that prose
 and the compiled patterns, not logic, and no function here reaches 25 lines. The two
 remaining families share the same normalised-text input and the same lexicons, so
 splitting them further would spread one contract across files without removing
 anything.
 
-COMPLEXITY BUDGET (CLAUDE.md, 381 lines). One function per Croatian feature, each with the
+COMPLEXITY BUDGET (381 lines). One function per Croatian feature, each with the
 docstring the specification requires: what it measures, why it should differ between human and machine
 Croatian, and its known failure mode. The docstrings are most of the length and they are
 the part that has to survive an oral defence.

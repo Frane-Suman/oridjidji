@@ -4,5 +4,5 @@ inference:
   encoder_backend: onnx-int8 # ONNX export of the selected encoder
   causal_backend: gguf-q4 # shared observer/performer backbone
   # Where `oridjidji train export` leaves its output. Absent on a fresh clone: the
-  # weights are not in git (CLAUDE.md), so the API must start without them and say so.
+  # weights are not in git (project policy), so the API must start without them and say so.
   model_dir: data/processed/models

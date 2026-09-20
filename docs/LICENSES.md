@@ -45,7 +45,7 @@ decision above and a separate redistribution check for Vicuna generations.
 | BSC-LT/salamandra-2b(-instruct) | Apache-2.0 | hrWaC in pretraining |
 | mistralai/Mistral-7B-Instruct-v0.2 · RWKV/v5-Eagle-7B-HF | Apache-2.0 | |
 | lmsys/vicuna-13b-v1.5 | **Llama 2 Community License** | check redistribution terms before publishing its generations in the dataset |
-| Claude / Gemini / Groq-served models | provider ToS | holdout generations: verify each provider's output-redistribution terms in M3 before the dataset is published |
+| Gemini / Groq-served models | provider ToS | holdout generations: verify each provider's output-redistribution terms in M3 before the dataset is published |
 
 ### Exact open-weight pins reserved for M9 `final_challenge`
 

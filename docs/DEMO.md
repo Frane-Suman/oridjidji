@@ -9,7 +9,7 @@ and the fast suite is green.
 
 ## 0. The one thing that is not in the repository
 
-Weights are never committed (`CLAUDE.md`, *Never commit*). The demo therefore needs a **candidate
+Weights are never committed (*Never commit*). The demo therefore needs a **candidate
 package**, and that is the only step that can stop you:
 
 | | size | needed for |

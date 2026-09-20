@@ -5,12 +5,12 @@ torch, ~2.5 GB). Excluded from the <500 ms fast path by design; parses are
 disk-cached by sha256(text)+model version. Unit tests build ``ParsedDocument``
 fixtures directly and never import classla.
 
-Complexity-budget note (CLAUDE.md): this file exceeds 300 lines because each of
+Complexity-budget note: this file exceeds 300 lines because each of
 the eight features carries its mandated what/Why/Failure-mode docstring —
 the bulk is that prose plus the parse dataclasses, not logic. Splitting the family
 would scatter one coherent fixture contract across files.
 
-COMPLEXITY BUDGET (CLAUDE.md, 426 lines). The CLASSLA boundary. Length is the price of
+COMPLEXITY BUDGET (426 lines). The CLASSLA boundary. Length is the price of
 keeping a heavy, optional dependency behind one typed adapter: parse caching, graceful
 absence, and one function per morphosyntactic feature. Splitting it would put half the
 adapter on each side of an import that may not resolve.

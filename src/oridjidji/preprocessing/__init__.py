@@ -44,7 +44,7 @@ def preprocess(
 ) -> Document:
     """Run the the specification pipeline and return a ``Document``.
 
-    COMPLEXITY BUDGET (CLAUDE.md, >50 lines): a single fixed sequence — the the specification
+    COMPLEXITY BUDGET (>50 lines): a single fixed sequence — the the specification
     pipeline — that ends by packing its results into one ``Document``. Most of the length
     is that constructor. The order is the specification, so it stays in one place.
 
