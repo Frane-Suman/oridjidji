@@ -69,7 +69,7 @@ def test_mode_is_execution_choice_and_preference_persists(browser: Browser, live
     page = _page(browser)
     page.goto(live_site)
     expect(page.get_by_role("heading", level=1)).to_have_text(
-        "Koliko je vjerojatno da je ovaj tekst napisao model?"
+        "Koliko je vjerojatno da je ovaj tekst napisala umjetna inteligencija?"
     )
     _choose_mode(page, "napredni")
     page.reload()

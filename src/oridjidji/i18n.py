@@ -84,7 +84,7 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_nav_analyse": "Analiza",
     "ui_nav_history": "Povijest",
     "ui_logo_alt": "Oriđiđi",
-    "ui_hero_title": "Koliko je vjerojatno da je ovaj tekst napisao model?",
+    "ui_hero_title": "Koliko je vjerojatno da je ovaj tekst napisala umjetna inteligencija?",
     "ui_hero_subline": (
         "Odaberi brzu BERTić procjenu ili sporiju višemetodnu analizu. "
         "Oba načina prikazuju kalibriranu procjenu i mogući neodlučan ishod."
