@@ -137,6 +137,20 @@ def plan_word_aligned_windows(
     )
 
 
+def prefix_scored_chars(
+    windows: tuple[TokenWindow, ...], offsets: list[tuple[int, int]]
+) -> int | None:
+    """End character of the scored prefix, or ``None`` when the windows are not one prefix.
+
+    ``offsets`` are the scoreable tokens' character spans (after any BOS), so a target
+    stop indexes them directly. The UI turns the value into "the first N words".
+    """
+    if len(windows) != 1 or windows[0].target_start != 0 or windows[0].target_stop < 1:
+        return None
+    stop = min(windows[0].target_stop, len(offsets))
+    return int(offsets[stop - 1][1]) if stop else None
+
+
 def _concat(parts: list[np.ndarray], dtype: np.dtype[np.generic]) -> np.ndarray:
     return np.asarray(np.concatenate(parts), dtype=dtype)
 

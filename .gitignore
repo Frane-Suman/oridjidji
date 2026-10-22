@@ -10,7 +10,7 @@ __pycache__/
 htmlcov/
 .coverage
 
-# Secrets. install.ps1 writes the Hugging Face token here.
+# Secrets, e.g. a Hugging Face token kept locally.
 .env
 
 # Model weights and downloaded data. The installer fills these; nothing here is committed.

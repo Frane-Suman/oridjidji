@@ -5,7 +5,7 @@ BERTic encoder. Advanced runs the calibrated A1+A2+A3 fusion and uses A4 only fo
 linguistic explanation. A research qualification in the runtime identity describes the
 evidence behind Advanced mode; it never disables the user's choice.
 
-The stub-first discipline paid off exactly as an earlier decision predicted for generation: the
+Building against stubs first paid off: the
 gates, the ethics furniture and the `INCONCLUSIVE` path were built and tested against
 `_stub_scores`, and swapping in a real detector touched two functions and no endpoint.
 
@@ -115,8 +115,10 @@ from oridjidji.api.schemas import (
     StandaloneThresholdEvidence,
     StreamEvent,
 )
-from oridjidji.artefacts import StatisticalThresholdReport
+from oridjidji.api.scope import analysed_scope, editor_scope_messages, scope_message
 from oridjidji.config import AppConfig, load_config
+from oridjidji.detectors.encoder import MAX_TOKENS as ENCODER_MAX_TOKENS
+from oridjidji.artefacts import StatisticalThresholdReport
 from oridjidji.explain.result_interpreter import (
     InterpretationBundle,
     deterministic_interpretation,
@@ -319,26 +321,21 @@ def _copy_report_hr(
     effective_mode: Mode,
     verdict: str,
     p_ai: float,
-    interval: tuple[float, float],
     agents_used: int,
     agents_total: int,
     n_words: int,
     warnings_hr: list[str],
     interpretation_hr: str,
+    scope_hr: str = "",
 ) -> str:
     mode_label = get_message("ui_mode_basic" if effective_mode == "osnovni" else "ui_mode_advanced")
-    low, high = interval
     lines = [
         f"{get_message('ui_mode_label')}: {mode_label}",
         f"{get_message('ui_result_label')}: {get_message(VERDICT_MESSAGE_KEYS[verdict])}",
         f"{render.hr_number(p_ai * 100, decimals=1)} %",
-        get_message(
-            "ui_result_interval",
-            low=render.hr_number(low * 100, decimals=1),
-            high=render.hr_number(high * 100, decimals=1),
-        ),
         interpretation_hr,
         get_message("ui_result_basis", used=agents_used, total=agents_total, n_words=n_words),
+        *([scope_hr] if scope_hr else []),
         *warnings_hr,
         get_message("disclaimer_short"),
         *NOTICE_HR,
@@ -690,7 +687,7 @@ def create_app(
         *, requested_mode: Mode, scored: DocumentScore, agents: list[AgentResult]
     ) -> InterpretationBundle:
         """Explain fixed scores; interpretation never enters calibration or fusion."""
-        verdict = str(_verdict_from(scored.p_ai, scored.interval, scored.layer))
+        verdict = str(_verdict_from(scored.p_ai, scored.layer))
         evidence, _, _ = _build_agent_evidence(
             agents,
             requested_mode=requested_mode,
@@ -702,7 +699,6 @@ def create_app(
         fallback = deterministic_interpretation(
             verdict=verdict,
             p_ai=scored.p_ai,
-            interval=scored.interval,
             evidence=evidence,
         )
         if requested_mode != "napredni" or scored.probability_source != "advanced":
@@ -715,7 +711,6 @@ def create_app(
             runtime,
             verdict=verdict,
             p_ai=scored.p_ai,
-            interval=scored.interval,
             evidence=evidence,
         )
 
@@ -822,7 +817,7 @@ def create_app(
         elapsed_ms: int,
     ) -> AnalyzeResponse:
         """Construct the one final response shape used by POST and POST/SSE."""
-        verdict = _verdict_from(scored.p_ai, scored.interval, scored.layer)
+        verdict = _verdict_from(scored.p_ai, scored.layer)
         effective_mode = _effective_mode(requested_mode, scored)
         evidence, agents_used, agents_total = _build_agent_evidence(
             outcome.agents,
@@ -840,6 +835,13 @@ def create_app(
             )
             for row in evidence
         ]
+        scope = analysed_scope(
+            document.normalized,
+            document.n_words,
+            outcome.agents,
+            {row.name for row in evidence if row.used_in_assessment},
+        )
+        scope_hr = scope_message(scope)
         return AnalyzeResponse(
             run_id=run_id,
             requested_mode=requested_mode,
@@ -847,7 +849,6 @@ def create_app(
             verdict=verdict,
             p_ai=scored.p_ai,
             operating_decision_ai=scored.operating_decision_ai,
-            interval=scored.interval,
             prediction_set=_prediction_labels_from(scored.p_ai, scored.layer),
             agents=outcome.agents,
             agent_evidence=evidence,
@@ -864,6 +865,8 @@ def create_app(
                 language_accepted=document.language_accepted,
                 is_bcs=document.language_is_bcs,
             ),
+            scope=scope,
+            scope_hr=scope_hr,
             warnings=response_warnings,
             disclaimer_hr=MESSAGES_HR["disclaimer_short"],
             limitations_hr=_limitations(cfg.min_word_count),
@@ -871,10 +874,10 @@ def create_app(
                 effective_mode=effective_mode,
                 verdict=str(verdict),
                 p_ai=scored.p_ai,
-                interval=scored.interval,
                 agents_used=agents_used,
                 agents_total=agents_total,
                 n_words=document.n_words,
+                scope_hr=scope_hr,
                 warnings_hr=response_warnings,
                 interpretation_hr=interpretation.summary_hr,
             ),
@@ -1350,6 +1353,11 @@ def create_app(
         ui_config = {
             "minWords": cfg.min_word_count,
             "maxWords": MAX_WORDS,
+            "scope": editor_scope_messages(
+                int(cfg.inference.get("max_tokens", ENCODER_MAX_TOKENS)),
+                str(cfg.inference.get("statistical_window_policy", "prefix512")),
+            ),
+            "scopeLong": MESSAGES_HR["ui_editor_scope_long"],
             "agents": agent_names,
             "agentsByMode": agents_by_mode,
             "defaultMode": "osnovni",
@@ -1470,39 +1478,17 @@ def create_app(
         """
         limitations = _limitations(cfg.min_word_count)
         fixtures = [
-            ("INCONCLUSIVE", 0.5, (0.15, 0.85), "osnovni", "osnovni", ""),
-            ("LIKELY_AI", 0.784, (0.641, 0.882), "osnovni", "osnovni", ""),
-            ("LIKELY_HUMAN", 0.21, (0.09, 0.34), "osnovni", "osnovni", ""),
-            (
-                "INCONCLUSIVE",
-                0.56,
-                (0.28, 0.79),
-                "napredni",
-                "napredni",
-                "research_only",
-            ),
-            (
-                "INCONCLUSIVE",
-                0.47,
-                (0.15, 0.85),
-                "napredni",
-                "osnovni",
-                "degraded_basic",
-            ),
-            (
-                "INCONCLUSIVE",
-                0.5,
-                (0.15, 0.85),
-                "napredni",
-                "napredni",
-                "advanced_unavailable",
-            ),
+            ("INCONCLUSIVE", 0.5, "osnovni", "osnovni", ""),
+            ("LIKELY_AI", 0.784, "osnovni", "osnovni", ""),
+            ("LIKELY_HUMAN", 0.21, "osnovni", "osnovni", ""),
+            ("INCONCLUSIVE", 0.56, "napredni", "napredni", "research_only"),
+            ("INCONCLUSIVE", 0.47, "napredni", "osnovni", "degraded_basic"),
+            ("INCONCLUSIVE", 0.5, "napredni", "napredni", "advanced_unavailable"),
         ]
         results = [
             render.result_context(
                 verdict=verdict,
                 p_ai=p_ai,
-                interval=interval,
                 n_words=312,
                 agents_used=3,
                 agents_total=3,
@@ -1514,7 +1500,6 @@ def create_app(
             for (
                 verdict,
                 p_ai,
-                interval,
                 requested_mode,
                 effective_mode,
                 runtime_status,

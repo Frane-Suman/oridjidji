@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -30,6 +30,7 @@ from oridjidji.detectors.windowing import (
     WindowPolicy,
     combine_reduced,
     plan_word_aligned_windows,
+    prefix_scored_chars,
     word_starts_from_offsets,
 )
 
@@ -527,7 +528,10 @@ class HuggingFaceBackbone:
                     ),
                 )
             )
-        combined = combine_reduced(parts, total_tokens=total, policy=policy)
+        combined = replace(
+            combine_reduced(parts, total_tokens=total, policy=policy),
+            scored_chars=prefix_scored_chars(windows, list(offsets[1:])),
+        )
         if combined.n_tokens < MIN_TOKENS:
             raise ValueError(
                 f"{combined.n_tokens} scoreable tokens is below the {MIN_TOKENS}-token floor"

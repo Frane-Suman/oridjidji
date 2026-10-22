@@ -23,11 +23,6 @@ class Detector(Protocol):
     def score(self, text: str) -> AgentResult: ...
 
 
-class SegmentReliabilityLike(Protocol):
-    @property
-    def half_width(self) -> float: ...
-
-
 SegmentFinalizer = Callable[[list[AgentResult]], float | None]
 
 
@@ -135,8 +130,6 @@ async def score_advanced_segments(
     detectors: Sequence[Detector],
     finalizer: SegmentFinalizer,
     min_words: int,
-    document_interval: tuple[float, float],
-    reliability: SegmentReliabilityLike,
 ) -> list[SpanScore]:
     """Score windows while reusing A2/A3 evidence and rerunning only the small A1 encoder."""
     windows, scores = await score_advanced_window_probabilities(
@@ -152,8 +145,6 @@ async def score_advanced_segments(
         windows,
         scores,
         total_words=len(text.split()),
-        document_interval=document_interval,
-        segment_half_width=reliability.half_width,
     )
 
 

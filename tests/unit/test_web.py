@@ -58,12 +58,21 @@ def test_numbers_use_the_croatian_decimal_comma() -> None:
     assert render.hr_number(64.05, decimals=1) == "64,0"
 
 
-def test_the_interval_line_is_never_just_a_number() -> None:
-    """A percentage without its interval is a bug, so the interval has its own
-    formatter and the estimate never renders through it alone."""
-    line = render.interval_line((0.641, 0.882))
-    assert "64,1" in line and "88,2" in line
-    assert "–" in line, "en dash, not a hyphen"
+def test_the_result_never_shows_the_heuristic_range() -> None:
+    """the ±0.10 display band was not a statistically grounded
+    uncertainty estimate, so no part of the displayed result may state or draw it."""
+    ctx = render.result_context(
+        verdict="LIKELY_AI",
+        p_ai=0.784,
+        n_words=312,
+        agents_used=3,
+        agents_total=3,
+        limitations=["x"],
+    )
+    assert not {"interval_line", "low", "high", "low_pct", "high_pct"} & set(ctx)
+    shown = " ".join(str(value) for value in ctx.values())
+    assert "64,1" not in shown and "88,2" not in shown
+    assert "raspon" not in str(ctx["rail_label"]).lower()
 
 
 # ----------------------------------------------------------------- the claim made
@@ -99,22 +108,18 @@ def test_every_verdict_maps_to_a_zone() -> None:
 # ----------------------------------------------------------------- the rail
 
 
-def test_the_rail_shows_the_width_of_the_uncertainty() -> None:
-    """The interval is drawn, not merely stated. The specification's test is whether a screenshot
-    pasted into a disciplinary email still communicates that the answer has a range —
-    a band has to be visible for that to be true."""
+def test_the_rail_marks_only_the_estimate() -> None:
+    """The rail places the calibrated estimate on a neutral 0-100 scale and draws no band; the three-state verdict carries the uncertainty, not a numeric interval."""
     ctx = render.result_context(
         verdict="LIKELY_AI",
         p_ai=0.784,
-        interval=(0.641, 0.882),
         n_words=312,
         agents_used=3,
         agents_total=3,
         limitations=["x"],
     )
-    assert ctx["low_pct"] == pytest.approx(64.1)
-    assert ctx["high_pct"] == pytest.approx(11.8)  # inset from the right, = 100 - 88.2
     assert ctx["estimate_pct"] == pytest.approx(78.4)
+    assert "low_pct" not in ctx and "high_pct" not in ctx
 
 
 # ----------------------------------------------------------------- the ring
@@ -247,7 +252,6 @@ def test_post_and_stream_return_the_same_final_assessment(client: TestClient) ->
         "verdict",
         "p_ai",
         "operating_decision_ai",
-        "interval",
         "prediction_set",
         "agents",
         "explanations",

@@ -1,4 +1,4 @@
-"""The single Croatian UI-string dictionary.
+"""The single Croatian UI-string dictionary (the project specification).
 
 Code and docs are English; every user-facing string lives here and only here.
 Keys are stable identifiers referenced from library code and, later, the web UI.
@@ -28,13 +28,11 @@ MESSAGES_HR: Final[dict[str, str]] = {
         "Tekst sadrži znakove koji oponašaju latinicu (homoglife) — moguć pokušaj "
         "zaobilaženja detekcije. Analiza je provedena na normaliziranom tekstu."
     ),
-    # --- verdicts (the specification: never an absolute claim, always a probability) -------
+    # --- verdicts (never an absolute claim, always a probability) -------
     #
-    # These are the brandbook's the specification headlines and they deliberately NEVER say
-    # "human". The earlier wording here was "Vjerojatnije ljudski napisan tekst" —
-    # symmetric, and readable as clearance. Brandbook the specification forbids any verified-human
-    # state for the reason that matters: a low score reported as "probably human" is
-    # the output most likely to be quoted at someone, and the model cannot support it.
+    # These are the brandbook's headlines and they deliberately NEVER say
+    # "human": a low score reported as "probably human" would read as clearance, and it is the
+    # output most likely to be quoted at someone, which the model cannot support.
     # Every headline therefore reports a degree of MACHINE signal, or its absence.
     #
     # The `Verdict` enum is untouched; `LIKELY_HUMAN` simply renders as weak evidence
@@ -47,11 +45,7 @@ MESSAGES_HR: Final[dict[str, str]] = {
         "svrstavanje na bilo koju stranu. Postupak je namjerno tako postavljen — radije "
         "će reći „ne znam” nego pogriješiti."
     ),
-    "interval_help": (
-        "Prikazani raspon je interval pouzdanosti: uz odabranu razinu, ovako širok "
-        "raspon očekivano sadrži točnu vrijednost. Uža ocjena od raspona ne postoji."
-    ),
-    # --- the permanent ethics panel (the specification: furniture, never dismissible) ------
+    # --- the permanent ethics panel (furniture, never dismissible) ------
     "disclaimer_short": (
         "Rezultat je procjena vjerojatnosti, a ne dokaz. Ne smije se koristiti za "
         "ocjenjivanje, stegovne postupke ni bilo kakvu odluku o pojedincu."
@@ -59,21 +53,25 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "limitations_title": "Ograničenja — pročitajte prije tumačenja rezultata",
     "limitation_not_evidence": (
         "Ovo nije dokaz. Nijedan detektor strojno generiranog teksta, pa ni ovaj, ne "
-        "može utvrditi autorstvo. Rezultat je vjerojatnost s intervalom i ništa više."
+        "može utvrditi autorstvo. Rezultat je kalibrirana procjena i ništa više."
     ),
     "limitation_min_length": (
         "Ispod otprilike {min_words} riječi procjena nije pouzdana. Kratki tekstovi ne "
         "sadrže dovoljno signala i rezultat na njima nije upotrebljiv."
+    ),
+    "limitation_scope": (
+        "Procjenjuje se samo početak teksta. Rezultat ne opisuje kasnije dijelove dužega "
+        "teksta i ne može otkriti tekst u kojem je samo dio strojno napisan."
     ),
     "limitation_paraphrase": (
         "Parafraziranje i ljudsko dorađivanje strojnog teksta bitno smanjuju točnost. "
         "Tko želi izbjeći detekciju, u pravilu u tome uspije."
     ),
     "limitation_false_positive": (
-        "Jednostavan, uredan ili neizvorni hrvatski češće biva pogrešno označen kao "
-        "strojni. Posljedice takve pogreške ne snose svi jednako."
+        "Na ispitanim ljudskim tekstovima zabilježeni su lažno pozitivni nalazi, osobito "
+        "u akademskom uzorku. Posljedice takve pogreške ne snose svi jednako."
     ),
-    # ================= web UI (the design system, verbatim) =====================
+    # ================= web UI (brandbook, verbatim) =====================
     # Verbatim from the brief: "Do not translate, improvise, or 'improve' the Croatian
     # microcopy." They live here rather than in the templates because the specification makes this
     # file the single source for every user-facing string.
@@ -89,12 +87,12 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_hero_title": "Koliko je vjerojatno da je ovaj tekst napisao model?",
     "ui_hero_subline": (
         "Odaberi brzu BERTić procjenu ili sporiju višemetodnu analizu. "
-        "Oba načina prikazuju vjerojatnost, raspon nesigurnosti i moguć neodlučan ishod."
+        "Oba načina prikazuju kalibriranu procjenu i mogući neodlučan ishod."
     ),
     "ui_mode_basic": "Osnovno",
     "ui_mode_advanced": "Napredno",
     "ui_mode_label": "Način analize",
-    "ui_mode_basic_description": "Brža analiza uvježbanim BERTić klasifikatorom.",
+    "ui_mode_basic_description": "Brža analiza početka teksta uvježbanim BERTić klasifikatorom.",
     "ui_mode_advanced_description": (
         "Sporija istraživačka analiza koja spaja više metoda i prikazuje dodatne signale."
     ),
@@ -108,7 +106,8 @@ MESSAGES_HR: Final[dict[str, str]] = {
     ),
     "ui_store_label": "Spremi uneseni tekst uz ovu analizu",
     "ui_store_help": (
-        "Bez ove privole spremaju se samo rezultat i tehnički podaci. Privola se poništava nakon slanja."
+        "Bez ovog odabira cijeli unos i ulomci iz naprednog prikaza ne spremaju se u lokalnu "
+        "povijest. Rezultat i tehnički podaci ostaju u povijesti."
     ),
     # --- editor ----------------------------------------------------
     "ui_editor_label": "TEKST ZA ANALIZU",
@@ -119,6 +118,20 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_editor_remaining": "Dodaj još {remaining} riječi za pokretanje analize.",
     "ui_editor_ready": "Tekst je dovoljno dug za analizu.",
     "ui_editor_over_limit": "Ukloni {excess} riječi ili podijeli tekst na manje dijelove.",
+    "ui_editor_scope_basic": (
+        "Osnovna analiza procjenjuje samo početak teksta: prvih {encoder_tokens} tokena, "
+        "približno {encoder_words} riječi. Ostatak dužega teksta ne ulazi u procjenu."
+    ),
+    "ui_editor_scope_advanced": (
+        "Napredna analiza procjenjuje samo početak teksta: BERTić čita približno prvih "
+        "{encoder_words} riječi, a statističke metode prvih {statistical_tokens} tokena, "
+        "približno {statistical_words} riječi. Ostatak dužega teksta ne ulazi u procjenu."
+    ),
+    "ui_editor_scope_advanced_sampled": (
+        "Napredna analiza ne procjenjuje cijeli dugi tekst: BERTić čita približno prvih "
+        "{encoder_words} riječi, a statističke metode početak i kraj teksta."
+    ),
+    "ui_editor_scope_long": "Od {n_words} unesenih riječi procijenit će se samo početak.",
     "ui_editor_disabled_empty": "Unesi tekst za analizu.",
     "ui_editor_disabled_short": "Tekst još nema potreban broj riječi.",
     "ui_editor_disabled_long": "Tekst prelazi dopuštenu duljinu.",
@@ -136,8 +149,9 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_progress_interpretation": "Sažeto tumačim rezultat…",
     "ui_method_title": "Metoda i trenutačni sklop",
     "ui_method_intro": (
-        "Oriđiđi spaja više neovisnih signala, kalibrira ih na hrvatskim tekstovima i "
-        "prikazuje procjenu s intervalom. Kada dokazi nisu dovoljni, rezultat ostaje neodlučan."
+        "Oriđiđi u osnovnom načinu koristi uvježbani klasifikator, a u naprednom mu pridružuje "
+        "statističke metode. Prikazuje kalibriranu procjenu; kada signali nisu dovoljni, "
+        "ishod je neodlučan."
     ),
     "ui_method_pipeline_title": "Tijek analize",
     "ui_method_runtime_title": "Podaci učitani pri pokretanju",
@@ -147,7 +161,7 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_method_none": "Nijedan model nije učitan; poslužitelj radi u sigurnom neodlučnom stanju.",
     "ui_method_basic_title": "Osnovna analiza",
     "ui_method_basic_body": (
-        "BERTić čita normalizirani hrvatski tekst i daje sirovi rezultat. Hrvatska kalibracija "
+        "BERTić čita početak normaliziranoga hrvatskog teksta i daje sirovi rezultat. Hrvatska kalibracija "
         "pretvara ga u postotak, a konformalni sloj određuje podržava li signal zaključak."
     ),
     "ui_method_advanced_title": "Napredna analiza",
@@ -155,10 +169,12 @@ MESSAGES_HR: Final[dict[str, str]] = {
         "Napredni način spaja BERTić s dvjema statističkim metodama nad jezičnim modelima. "
         "Jezične značajke objašnjavaju stil teksta, ali ne ulaze u završni postotak."
     ),
-    "ui_method_probability_title": "Postotak, interval i neodlučan ishod",
+    "ui_method_probability_title": "Postotak i neodlučan ishod",
     "ui_method_probability_body": (
-        "Postotak je kalibrirana procjena, a puni raspon pokazuje njezinu nesigurnost. "
-        "INCONCLUSIVE nastaje iz konformalnog skupa predviđanja, a ne iz unaprijed zadanog srednjeg pojasa."
+        "Postotak je kalibrirana vjerojatnost strojnog pisanja, procijenjena na hrvatskim "
+        "kalibracijskim podatcima. Oznaku rezultata određuje konformalni skup predviđanja "
+        "kalibriran zasebno za svaki razred: ako skup sadrži samo jedan razred, prikazuje se "
+        "pripadajuća oznaka, a ako sadrži oba razreda ili nijedan, rezultat je „Neodlučno”."
     ),
     "ui_method_runtime_states_title": "Stanja naprednog načina",
     "ui_method_runtime_states_body": (
@@ -172,13 +188,14 @@ MESSAGES_HR: Final[dict[str, str]] = {
     ),
     "ui_method_privacy_title": "Privatnost",
     "ui_method_privacy_body": (
-        "Uneseni tekst ne sprema se bez zasebne privole za svaku analizu. Rezultat, upozorenja i "
-        "tehnički identitet izvođenja mogu ostati u lokalnoj povijesti."
+        "Cijeli uneseni tekst zasebno se sprema samo ako korisnik to odabere. U naprednom "
+        "načinu odgovor na zaslonu može sadržavati ulomke teksta, ali bez pristanka oni se ne "
+        "spremaju u lokalnu povijest. Rezultat i tehnički podaci mogu se ondje zadržati."
     ),
     "ui_method_limitations_title": "Pristranosti i poznata ograničenja",
     "ui_method_limitations_body": (
-        "Točnost ovisi o duljini, domeni, generatoru i naknadnom uređivanju. Jednostavniji stil "
-        "i tekstovi neizvornih govornika mogu dobiti višu procjenu nego što je opravdano."
+        "Točnost ovisi o duljini, domeni, generatoru i naknadnom uređivanju. Na ispitanim "
+        "ljudskim tekstovima postoje lažno pozitivni nalazi; druge skupine nisu zasebno provjerene."
     ),
     "ui_method_references_title": "Korištene metode",
     "ui_method_reference_encoder": "BERTić klasifikator hrvatskog teksta",
@@ -186,7 +203,10 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_method_reference_conformal": "Klasično uvjetno konformalno predviđanje",
     "ui_method_runtime_identity": "Identiteti učitanih artefakata",
     "ui_method_step_preprocess": "Tekst se normalizira te se provjeravaju jezik i duljina.",
-    "ui_method_step_agents": "Dostupni detektori obrađuju isti normalizirani tekst.",
+    "ui_method_step_agents": (
+        "Dostupni detektori obrađuju početni odsječak istoga normaliziranog teksta; ostatak "
+        "dužega teksta ne ulazi u procjenu."
+    ),
     "ui_method_step_calibrate": "Rezultati se spajaju i kalibriraju samo učitanim hrvatskim artefaktima.",
     "ui_method_step_conformal": "Konformalni skup određuje je li dopušten zaključak ili neodlučan ishod.",
     "ui_evidence_title": "Dodatni prikazi signala",
@@ -236,7 +256,7 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_text_signal_word_title": "Relativna jačina traga: {weight} %",
     "ui_interpretation_title": "Sažeto tumačenje",
     "ui_interpretation_ai": (
-        "Metode zajedno nalaze izražen strojni obrazac, uz nesigurnost prikazanu intervalom."
+        "Analiza nalazi izražen strojni obrazac, ali time ne dokazuje strojno autorstvo."
     ),
     "ui_interpretation_human": (
         "Analiza nalazi malo strojnog obrasca, ali time ne potvrđuje ljudsko autorstvo."
@@ -244,18 +264,14 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_interpretation_inconclusive": (
         "Signali nisu dovoljno jednoznačni za pouzdano razlikovanje ljudskog i strojnog teksta."
     ),
-    "ui_interpretation_wide_interval": "Širok interval traži poseban oprez pri tumačenju.",
     "ui_interpretation_precise_ai": (
-        "Procjena iznosi {estimate} %, uz mogući raspon od {low} do {high} %. "
-        "Rezultat upućuje na veliku vjerojatnost strojnog pisanja."
+        "Procjena iznosi {estimate} %. Rezultat upućuje na veliku vjerojatnost strojnog pisanja."
     ),
     "ui_interpretation_precise_human": (
-        "Procjena iznosi {estimate} %, uz mogući raspon od {low} do {high} %. "
-        "Rezultat više odgovara ljudskom pisanju."
+        "Procjena iznosi {estimate} %. Rezultat više odgovara ljudskom pisanju."
     ),
     "ui_interpretation_precise_inconclusive": (
-        "Procjena iznosi {estimate} %, uz mogući raspon od {low} do {high} %. "
-        "Rezultat nije dovoljno jasan za pouzdan zaključak."
+        "Procjena iznosi {estimate} %. Rezultat nije dovoljno jasan za pouzdan zaključak."
     ),
     "ui_agent_interpretation_failed": (
         "Metoda nije završila pa nije utjecala na prikazanu procjenu."
@@ -301,11 +317,31 @@ MESSAGES_HR: Final[dict[str, str]] = {
     # --- result ----------------------------------------------------
     "ui_result_label": "REZULTAT",
     "ui_new_analysis": "Novi tekst",
-    "ui_result_interval": "interval pouzdanosti {low} – {high} %",
-    "ui_result_basis": "Procjena se temelji na {used} od {total} detektora i {n_words} riječi.",
+    "ui_result_basis": "Procjena se temelji na {used} od {total} detektora.",
+    "ui_scope_title": "Analizirani dio teksta",
+    "ui_scope_whole": "Procijenjen je cijeli tekst ({n_words} riječi).",
+    "ui_scope_basic": (
+        "Procijenjen je samo početak teksta: prvih {encoder_words} od {n_words} riječi. "
+        "Ostatak teksta nije analiziran."
+    ),
+    "ui_scope_advanced": (
+        "Procijenjen je samo početak teksta od {n_words} riječi: BERTić je pročitao prvih "
+        "{encoder_words}, a statističke metode prvih {statistical_words} riječi. Ostatak "
+        "teksta nije analiziran."
+    ),
+    "ui_scope_advanced_statistical_whole": (
+        "Statističke metode pročitale su cijeli tekst od {n_words} riječi, a BERTić samo "
+        "prvih {encoder_words} riječi."
+    ),
+    "ui_scope_advanced_sampled": (
+        "Procijenjen je samo dio teksta od {n_words} riječi: BERTić je pročitao prvih "
+        "{encoder_words}, a statističke metode početak i kraj teksta."
+    ),
+    "ui_scope_unknown": ("Procijenjen je dio teksta od {n_words} riječi; obuhvat nije zabilježen."),
     "ui_result_inconclusive_body": (
-        "Detektori se ne slažu dovoljno da bi procjena bila korisna. Duži tekst ili "
-        "tekst bez naknadnih izmjena obično daje jasniji rezultat."
+        "Procjena ne podupire nijednu oznaku: analizirani dio teksta ne nalikuje dovoljno "
+        "ni ljudskim ni strojnim tekstovima na kojima je sustav kalibriran. Tekst dodan iza "
+        "analiziranoga početka ne mijenja procjenu."
     ),
     "ui_result_copy": "Kopiraj izvještaj",
     "ui_result_how": "Kako ovo radi",
@@ -323,9 +359,7 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_result_warnings": "Upozorenja",
     "ui_result_copied": "Izvještaj je kopiran.",
     "ui_result_copy_failed": "Izvještaj nije moguće kopirati. Označi ga i kopiraj ručno.",
-    "ui_result_rail_label": (
-        "Procjena {estimate} posto, interval {low} do {high} posto, ishod: {verdict}."
-    ),
+    "ui_result_rail_label": ("Procjena {estimate} posto, ishod: {verdict}."),
     "ui_result_scale_start": "0 %",
     "ui_result_scale_end": "100 %",
     "ui_runtime_research_title": "Istraživačka napredna procjena",
@@ -382,9 +416,11 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_history_status": "Stanje",
     "ui_history_words": "Broj riječi",
     "ui_history_probability": "Procjena strojnog pisanja",
-    "ui_history_interval": "Interval pouzdanosti",
     "ui_history_text_title": "Spremljeni tekst",
-    "ui_history_text_absent": "Tekst nije spremljen jer privola nije bila uključena.",
+    "ui_history_text_absent": (
+        "Cijeli uneseni tekst i tekstualni ulomci nisu spremljeni; rezultat i tehnički podaci "
+        "ostaju u povijesti."
+    ),
     "ui_history_feedback_title": "Povratna informacija",
     "ui_history_feedback_label": "Očekivana oznaka",
     "ui_history_feedback_human": "ljudski tekst",
@@ -417,18 +453,18 @@ MESSAGES_HR: Final[dict[str, str]] = {
     "ui_notice_statistical": "Ovo je statistička procjena, a ne dokaz.",
     "ui_notice_no_sanction": "Ne koristi je kao osnovu za optužbu, ocjenu ili sankciju.",
     "ui_notice_language_bias": (
-        "Jednostavniji hrvatski i tekstovi neizvornih govornika češće dobiju lažno visoku procjenu."
+        "Na ispitanim ljudskim tekstovima zabilježeni su lažno pozitivni nalazi, osobito u akademskoj domeni."
     ),
     # One label per detector band. Served rather than held by the frontend (12.5):
     # the UI must not know which detectors exist, only how to draw the ones it is told
     # about. Named by what it does, not by the checkpoint it happens to load.
     "agent_encoder": "Uvježbani klasifikator",
-    # A4: the Croatian feature set as a scoring agent. Named for what a reader can
+    # A4 (M1/M6): the Croatian feature set as a scoring agent. Named for what a reader can
     # verify — it looks at how the text is written — rather than for the 37 extractors behind
     # it. Missing this key crashed `create_app` the first time A4 was served, because every
     # serving test used a stub subclassing EncoderDetector and inherited the encoder's label.
     "agent_linguistic": "Jezične značajke",
-    # The Advanced-mode agents. Named for what they measure rather than for the
+    # The Advanced-mode agents (M5). Named for what they measure rather than for the
     # papers they come from — a reader of the UI has not read Hans et al.
     "agent_binoculars": "Dvostruki obzervator",
     "agent_binoculars_v4": "Dvostruki obzervator na granicama riječi",
@@ -444,9 +480,9 @@ MESSAGES_HR: Final[dict[str, str]] = {
     ),
     # --- calibration state (2.1, 2.3) --------------------------------------
     # Shown whenever a detector has run but nothing has mapped its score onto observed
-    # frequencies. The interval is what makes the number a claim, and until M6 there is
-    # no interval to give - so the result abstains and says why, rather than presenting
-    # a raw network output as a probability.
+    # frequencies. Without a fitted calibrator and its conformal quantiles a score is not a
+    # probability, so the result abstains and says why, rather than presenting a raw network
+    # output as one.
     "uncalibrated_notice": (
         "Detektor je izračunao rezultat, ali procjena još nije kalibrirana na "
         "hrvatskim podacima, pa se ne prikazuje kao vjerojatnost. Sirovi rezultat vidljiv "
@@ -473,12 +509,13 @@ MESSAGES_HR: Final[dict[str, str]] = {
 LIMITATION_KEYS: Final[tuple[str, ...]] = (
     "limitation_not_evidence",
     "limitation_min_length",
+    "limitation_scope",
     "limitation_paraphrase",
     "limitation_false_positive",
     "limitation_never_discipline",
 )
 
-# The the specification notice, verbatim and in order. Three sentences, always all three: the
+# The notice, verbatim and in order. Three sentences, always all three: the
 # brandbook renders it on every result screen without exception, and a partial notice
 # is the failure mode the whole panel exists to prevent.
 NOTICE_HR: Final[tuple[str, ...]] = (

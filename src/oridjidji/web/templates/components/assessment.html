@@ -19,8 +19,13 @@
   {% endif %}
 
   <p class="estimate num">{{ estimate }}&nbsp;%</p>
-  <p class="interval num">{{ interval_line }}</p>
   {% include "components/probability_rail.html" %}
+  {% if scope_hr %}
+  <section class="analysed-scope" data-testid="analysed-scope" aria-labelledby="{{ result_id|default('result-heading') }}-scope">
+    <h3 id="{{ result_id|default('result-heading') }}-scope">{{ t("ui_scope_title") }}</h3>
+    <p>{{ scope_hr }}</p>
+  </section>
+  {% endif %}
   <section class="result-interpretation" aria-labelledby="{{ result_id|default('result-heading') }}-interpretation">
     <h3 id="{{ result_id|default('result-heading') }}-interpretation">{{ t("ui_interpretation_title") }}</h3>
     <p>{{ interpretation_hr }}</p>

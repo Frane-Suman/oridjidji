@@ -1,8 +1,10 @@
 # DEFAULT profile: no discrete GPU exists, so quantised CPU inference is
 # the norm, not a degraded mode. Backend values apply once the models are installed.
 inference:
-  encoder_backend: onnx-int8 # ONNX export of the selected encoder
+  # Descriptive only: the encoder loader does not read this key. It serves the FP32 ONNX
+  # export (INT8 is only a fallback), so the value names what is actually served.
+  encoder_backend: onnx
   causal_backend: gguf-q4 # shared observer/performer backbone
-  # Where `oridjidji train export` leaves its output. Absent on a fresh clone: the
+  # Where the model export is kept. Absent on a fresh clone: the
   # weights are not in git (project policy), so the API must start without them and say so.
   model_dir: data/processed/models

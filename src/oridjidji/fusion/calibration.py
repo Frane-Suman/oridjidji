@@ -2,7 +2,7 @@
 
 A detector score is not a probability. The encoder emits a softmax that reads 0.98 on texts
 it is right about 90% of the time, and the specification promises the user a *calibrated* probability with
-an interval. Closing that gap is this module's whole job, and it sits between the fused score
+a conformal three-state verdict. Closing that gap is this module's whole job, and it sits between the fused score
 and the conformal layer: calibration makes the number mean something, conformal decides when
 even a calibrated number is not enough to commit.
 

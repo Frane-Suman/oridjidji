@@ -9,8 +9,9 @@ from oridjidji.api.runtime_loading import FusionLayer
 from oridjidji.i18n import get_message
 from oridjidji.schemas import AgentResult, AgentStatus, Verdict
 
-# Honest abstention when no compatible probability layer is available.
-ABSTAIN: tuple[float, tuple[float, float]] = (0.5, (0.15, 0.85))
+# Honest abstention when no compatible probability layer is available: the neutral midpoint
+# is reported, and without a layer `_verdict_from` returns INCONCLUSIVE.
+ABSTAIN_P_AI = 0.5
 
 
 @dataclass(frozen=True)
@@ -23,7 +24,6 @@ class DocumentScore:
     """
 
     p_ai: float
-    interval: tuple[float, float]
     warnings: list[str]
     layer: Any | None = None
     operating_decision_ai: bool = False
@@ -37,43 +37,23 @@ def _operating_decision_ai(calibrated: float, layer: Any) -> bool:
     return threshold is not None and calibrated >= float(threshold)
 
 
-def _commit(
-    calibrated: float, quantiles: Any, floor: float = 0.0
-) -> tuple[float, tuple[float, float], list[str]]:
-    """Turn a calibrated probability into a point, an interval, and any warning.
+def _commit(calibrated: float, quantiles: Any) -> tuple[float, list[str]]:
+    """Return the calibrated probability and any warning its conformal set implies.
 
     Shared by the single-agent and fused paths so the abstention arithmetic exists once.
-
-    ``floor`` is the calibration set's certainty floor, and the interval respects it for the
-    same reason the point estimate does: an interval ending at exactly 1.0 says the text
-    could be certainly machine, which the specification forbids as plainly as `p_ai=1.0` does. Clipping
-    the point alone left `(0.9969, 1.0000)` on the wire.
+    The probability is reported as calibrated; whether it commits to a side is decided by
+    the class-conditional conformal set in `_verdict_from`, never by a band around it
+    (there is no heuristic display interval).
     """
     from oridjidji.fusion.conformal import prediction_set
 
     labels = prediction_set(calibrated, quantiles)
-    if len(labels) == 1:
-        # Committed: a band around the calibrated probability, CLIPPED to what the
-        # calibration set supports rather than shrunk symmetrically to fit inside it.
-        # Shrinking collapsed the interval to zero width exactly at the floor — (0.9984,
-        # 0.9984), an interval asserting no uncertainty at all, which is the same the specification
-        # violation as p_ai=1.0 wearing a different shape. Asymmetry near the ends is the
-        # honest cost: there is less room above a high probability than below it.
-        low = max(floor, calibrated - 0.10)
-        high = min(1.0 - floor, calibrated + 0.10)
-        return calibrated, (low, high), []
-    # Abstaining, but still reporting the calibrated probability -- so the interval has to
-    # CONTAIN it. Pairing a point estimate of 0.97 with a fixed (0.15, 0.85) band produced a
-    # response whose own schema rejected it: "p_ai lies outside its own interval". Widening
-    # to span both the point and the abstention band keeps the invariant and says the honest
-    # thing: this is the probability, and it is not enough to commit.
-    low, high = ABSTAIN[1]
     # An EMPTY set and a set holding BOTH labels are different facts, and conformal.py keeps
     # them separable so the UI does not flatten them. Empty means the text is nonconforming
     # to both classes — unlike the calibration data — which is not the same as "no calibration
     # exists", and the message said the latter for both.
     warnings = [get_message("atypical_notice")] if not labels else []
-    return calibrated, (min(calibrated, low), max(calibrated, high)), warnings
+    return calibrated, warnings
 
 
 def _document_score(
@@ -82,7 +62,7 @@ def _document_score(
     alpha: float = 0.10,
     fusion: FusionLayer | None = None,
 ) -> DocumentScore:
-    """Fold agent scores into a document probability, an interval, and any warnings.
+    """Fold agent scores into a document probability and any warnings.
 
     **With a fitted layer this maps; without one it still declines.** The map is the
     calibrator: a detector score is not a probability, and 2.4 forbids importing the
@@ -94,14 +74,14 @@ def _document_score(
     An unweighted mean of detectors with different scales and opposite directions is not a
     probability, so without a fitted ensemble this still abstains rather than averaging.
     """
-    p_ai, interval = ABSTAIN
+    p_ai = ABSTAIN_P_AI
     if not agents:
-        return DocumentScore(p_ai, interval, [])
+        return DocumentScore(p_ai, [])
     usable = [
         agent for agent in agents if agent.status is AgentStatus.OK and agent.score is not None
     ]
     if not usable:
-        return DocumentScore(p_ai, interval, [get_message("ui_error_model_unavailable")])
+        return DocumentScore(p_ai, [get_message("ui_error_model_unavailable")])
 
     from oridjidji.fusion.ensemble import EXPLAINABILITY_ONLY
 
@@ -125,7 +105,7 @@ def _document_score(
         or (selected is None and agent.name not in EXPLAINABILITY_ONLY)
     ]
     if not scoring:
-        return DocumentScore(p_ai, interval, [get_message("uncalibrated_notice")])
+        return DocumentScore(p_ai, [get_message("uncalibrated_notice")])
 
     if selected_member_failed:
         encoder = next(
@@ -135,16 +115,14 @@ def _document_score(
         if encoder is None or layer is None:
             return DocumentScore(
                 p_ai,
-                interval,
                 [get_message("advanced_degraded_notice"), get_message("uncalibrated_notice")],
             )
         calibrated = float(layer.calibrator.apply([encoder.score])[0])
         quantiles = layer.quantiles.get(alpha) or next(iter(layer.quantiles.values()))
-        point, span, warnings = _commit(calibrated, quantiles, layer.calibrator.certainty_floor)
+        point, warnings = _commit(calibrated, quantiles)
         warnings.append(get_message("advanced_degraded_notice"))
         return DocumentScore(
             point,
-            span,
             warnings,
             layer,
             _operating_decision_ai(calibrated, layer),
@@ -158,15 +136,12 @@ def _document_score(
             None,
         )
         if encoder is None:
-            return DocumentScore(p_ai, interval, [get_message("ui_error_model_unavailable")])
+            return DocumentScore(p_ai, [get_message("ui_error_model_unavailable")])
         calibrated = float(fusion.layer.calibrator.apply([encoder.score])[0])
         quantiles = fusion.layer.quantiles.get(alpha) or next(iter(fusion.layer.quantiles.values()))
-        point, span, warnings = _commit(
-            calibrated, quantiles, fusion.layer.calibrator.certainty_floor
-        )
+        point, warnings = _commit(calibrated, quantiles)
         return DocumentScore(
             point,
-            span,
             warnings,
             fusion.layer,
             _operating_decision_ai(calibrated, fusion.layer),
@@ -175,17 +150,14 @@ def _document_score(
 
     if len(scoring) > 1:
         if fusion is None or fusion.ensemble is None:
-            return DocumentScore(p_ai, interval, [get_message("uncalibrated_notice")])
+            return DocumentScore(p_ai, [get_message("uncalibrated_notice")])
         row: dict[str, float | None] = {agent.name: agent.score for agent in scoring}
         fused = fusion.ensemble.score(row)
         calibrated = float(fusion.layer.calibrator.apply([fused])[0])
         quantiles = fusion.layer.quantiles.get(alpha) or next(iter(fusion.layer.quantiles.values()))
-        point, span, warnings = _commit(
-            calibrated, quantiles, fusion.layer.calibrator.certainty_floor
-        )
+        point, warnings = _commit(calibrated, quantiles)
         return DocumentScore(
             point,
-            span,
             warnings,
             fusion.layer,
             _operating_decision_ai(calibrated, fusion.layer),
@@ -193,13 +165,12 @@ def _document_score(
         )
 
     if layer is None:
-        return DocumentScore(p_ai, interval, [get_message("uncalibrated_notice")])
+        return DocumentScore(p_ai, [get_message("uncalibrated_notice")])
     calibrated = float(layer.calibrator.apply([scoring[0].score])[0])
     quantiles = layer.quantiles.get(alpha) or next(iter(layer.quantiles.values()))
-    point, span, warnings = _commit(calibrated, quantiles, layer.calibrator.certainty_floor)
+    point, warnings = _commit(calibrated, quantiles)
     return DocumentScore(
         point,
-        span,
         warnings,
         layer,
         _operating_decision_ai(calibrated, layer),
@@ -224,40 +195,34 @@ def score_for_mode(
     if mode == "osnovni":
         return _document_score(agents, basic_layer)
     if not advanced_configured or fusion is None:
-        return DocumentScore(
-            *ABSTAIN,
-            [get_message("ui_error_model_unavailable")],
-        )
+        return DocumentScore(ABSTAIN_P_AI, [get_message("ui_error_model_unavailable")])
     return _document_score(agents, basic_layer, fusion=fusion)
 
 
 def _verdict_from(
     p_ai: float,
-    interval: tuple[float, float],
     layer: Any | None = None,
     alpha: float = 0.10,
 ) -> Verdict:
     """Three-state outcome (2.1, 2.3).
 
-    With a fitted layer the boundary is the conformal prediction set, which is what 2.3
-    requires: a set holding both labels means the evidence supports neither side, an empty
-    set means the text is atypical of both, and only a singleton commits.
+    With a fitted layer the boundary is the class-conditional conformal prediction set,
+    which is what 2.3 requires: a set holding both labels means the evidence supports
+    neither side, an empty set means the text is atypical of both, and only a singleton
+    commits.
 
     The layer passed here must be the one that produced ``p_ai`` -- `DocumentScore` carries
     it for exactly that reason.
 
-    Without one the rule falls back to the interval spanning 0.5 -- provisional, and marked
-    as such, but the same shape: an interval that spans the middle cannot support a side.
+    Without a layer there is no calibrated probability to judge, so the outcome is
+    INCONCLUSIVE; every layer-less path reports `ABSTAIN_P_AI`.
     """
-    if layer is not None:
-        from oridjidji.fusion.conformal import verdict_for
-
-        quantiles = layer.quantiles.get(alpha) or next(iter(layer.quantiles.values()))
-        return verdict_for(p_ai, quantiles)
-    low, high = interval
-    if low <= 0.5 <= high:
+    if layer is None:
         return Verdict.INCONCLUSIVE
-    return Verdict.LIKELY_AI if p_ai > 0.5 else Verdict.LIKELY_HUMAN
+    from oridjidji.fusion.conformal import verdict_for
+
+    quantiles = layer.quantiles.get(alpha) or next(iter(layer.quantiles.values()))
+    return verdict_for(p_ai, quantiles)
 
 
 def _prediction_labels_from(

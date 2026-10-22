@@ -15,7 +15,7 @@ def test_lite_profile_loads_with_defaults() -> None:
     assert cfg.language == "hr"
     assert cfg.min_word_count == 100  # the shipped product gate
     assert cfg.inference["device"] == "cpu"
-    assert cfg.inference["encoder_backend"] == "onnx-int8"
+    assert cfg.inference["encoder_backend"] == "onnx"
 
 
 def test_full_profile_overlays_but_keeps_base_keys() -> None:

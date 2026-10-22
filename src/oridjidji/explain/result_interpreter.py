@@ -121,28 +121,17 @@ def _agent_fallback(row: AgentEvidence) -> str:
 
 
 def deterministic_interpretation(
-    *, verdict: str, p_ai: float, interval: tuple[float, float], evidence: list[AgentEvidence]
+    *, verdict: str, p_ai: float, evidence: list[AgentEvidence]
 ) -> InterpretationBundle:
     """Safe fallback used by Basic and whenever Gemma cannot return valid Croatian JSON."""
-    low, high = interval
-    width = high - low
     estimate_hr = _hr_percent(p_ai)
-    low_hr = _hr_percent(low)
-    high_hr = _hr_percent(high)
     if verdict == "LIKELY_AI":
         message_key = "ui_interpretation_precise_ai"
     elif verdict == "LIKELY_HUMAN":
         message_key = "ui_interpretation_precise_human"
     else:
         message_key = "ui_interpretation_precise_inconclusive"
-    summary = get_message(
-        message_key,
-        estimate=estimate_hr,
-        low=low_hr,
-        high=high_hr,
-    )
-    if width >= 0.5:
-        summary += " " + get_message("ui_interpretation_wide_interval")
+    summary = get_message(message_key, estimate=estimate_hr)
     return InterpretationBundle(
         summary_hr=summary,
         agents_hr={row.name: _agent_fallback(row) for row in evidence},
@@ -153,7 +142,6 @@ def _prompt(
     *,
     verdict: str,
     p_ai: float,
-    interval: tuple[float, float],
     evidence: list[AgentEvidence],
 ) -> str:
     rows = [
@@ -172,7 +160,6 @@ def _prompt(
         {
             "verdict": verdict,
             "p_ai": round(p_ai, 4),
-            "interval": [round(interval[0], 4), round(interval[1], 4)],
             "methods": rows,
         },
         ensure_ascii=False,
@@ -181,14 +168,14 @@ def _prompt(
     draft = deterministic_interpretation(
         verdict=verdict,
         p_ai=p_ai,
-        interval=interval,
         evidence=evidence,
     ).summary_hr
     return (
         "Preoblikuj nacrt u najviše dvije kratke i jasne hrvatske rečenice razumljive osobi "
-        "bez tehničkog znanja. Obavezno zadrži sva tri navedena postotka i smisao zaključka. "
+        "bez tehničkog znanja. Obavezno zadrži navedeni postotak i smisao zaključka. Ne navodi raspon ni interval. "
         "Ne koristi riječi signal, fuzija, kalibracija ili konformalno. Ne tvrdi da je autorstvo "
-        "dokazano ili sigurno. Vrati samo rečenice, bez uvoda, popisa ili JSON-a. Nacrt: "
+        "dokazano ili sigurno. Procjena se odnosi samo na početak teksta, pa ne tvrdi ništa o "
+        "ostatku teksta. Vrati samo rečenice, bez uvoda, popisa ili JSON-a. Nacrt: "
         + draft
         + " Podaci za provjeru: "
         + payload
@@ -222,17 +209,15 @@ def interpret_with_gemma(
     *,
     verdict: str,
     p_ai: float,
-    interval: tuple[float, float],
     evidence: list[AgentEvidence],
 ) -> InterpretationBundle:
     """Ask Gemma to verbalize fixed numbers; invalid output falls back deterministically."""
-    fallback = deterministic_interpretation(
-        verdict=verdict, p_ai=p_ai, interval=interval, evidence=evidence
-    )
-    required_numbers = (_hr_percent(p_ai), _hr_percent(interval[0]), _hr_percent(interval[1]))
+    fallback = deterministic_interpretation(verdict=verdict, p_ai=p_ai, evidence=evidence)
+    # Only the estimate must survive: no range is reported.
+    required_numbers = (_hr_percent(p_ai),)
     try:
         raw = runtime.complete(
-            _prompt(verdict=verdict, p_ai=p_ai, interval=interval, evidence=evidence),
+            _prompt(verdict=verdict, p_ai=p_ai, evidence=evidence),
             max_tokens=120,
         )
     except Exception as exc:  # noqa: BLE001 - interpretation must not invalidate scoring

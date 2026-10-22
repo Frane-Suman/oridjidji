@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Instalacija Oriđiđi detektora (Linux i macOS).
 #
-# Skripta se smije pokrenuti više puta. Postavlja osnovni način rada, koji je ujedno
-# i isporučeni način. Napredni način ovdje nije dostupan: paket llama-cpp-python u
+# Skripta se smije pokrenuti više puta. Osnovni način koristi artefakte iz mape models/ (isporučeni u arhivi).
+# Napredni način ovdje nije dostupan: paket llama-cpp-python u
 # ovom projektu ima oznaku samo za Windows, pa se statistički agenti ne mogu pokrenuti.
 # Za napredni način upotrijebite install.ps1 na Windowsima.
 #
@@ -19,7 +19,6 @@ greska() { printf '   \033[31mX\033[0m   %s\n' "$1"; }
 
 echo "Oriđiđi - instalacija"
 echo "Procjena vjerojatnosti da je tekst na hrvatskome jeziku strojno napisan."
-
 naslov "1/5  Provjera alata uv"
 if ! command -v uv >/dev/null 2>&1; then
     upoz "uv nije pronađen. Instaliram ga..."
@@ -31,7 +30,7 @@ uspjeh "uv $(uv --version)"
 
 naslov "2/5  Python okruženje i ovisnosti"
 echo "   Preuzima se oko 2,5 GB paketa (torch, onnxruntime, transformers). Potraje."
-uv sync --extra serve --extra encoder
+uv sync --locked --extra serve --extra encoder
 uspjeh "ovisnosti spremne"
 
 naslov "3/5  Mape"
@@ -41,15 +40,12 @@ uspjeh "models/, models/history/, data/lexicons/"
 naslov "4/5  Hrvatski rječnik"
 uv run python tools/fetch_lexicons.py || upoz "Rječnik nije preuzet; sustav radi i bez njega."
 
-naslov "5/5  Artefakti modela (oko 423 MB)"
+naslov "5/5  Artefakti modela (oko 423 MiB)"
 uv run python - <<'PY'
-import hashlib, json, pathlib, sys, urllib.request
+import hashlib, json, os, pathlib, sys, urllib.request
 
 root = pathlib.Path.cwd()
 manifest = json.loads((root / "release_manifest.json").read_text(encoding="utf-8"))
-if manifest["base_url"].startswith("REPLACE_ME"):
-    sys.exit("release_manifest.json nema adresu izdanja (base_url). Uredite to polje.")
-
 def sha256(p):
     h = hashlib.sha256()
     with p.open("rb") as fh:
@@ -64,7 +60,7 @@ for f in manifest["files"]:
     if target.exists() and sha256(target) == f["sha256"]:
         preskoceno += 1
         continue
-    url = f"{manifest['base_url']}/{f['path'].replace('/', '__')}"
+    url = f"{os.environ.get('BASE_URL', manifest['base_url']).rstrip('/')}/{f['path'].replace('/', '__')}"
     print(f"   preuzimam {f['path']} ({f['bytes'] / 1048576:.1f} MB)")
     urllib.request.urlretrieve(url, target)
     if sha256(target) != f["sha256"]:
@@ -80,7 +76,7 @@ upoz "Osnovni način rada, koji je i isporučeni način, radi u cijelosti."
 
 naslov "Završna provjera"
 export ORIDJIDJI_SKIP_BUNDLE_VERIFY=1
-if uv run oridjidji demo-check --profile demo --candidate-root "$MODELI"; then
+if uv run oridjidji demo-check --profile basic --basic-only --candidate-root "$MODELI"; then
     uspjeh "sve je spremno"
 else
     upoz "Provjera nije prošla u cijelosti. Pogledajte poruke iznad."

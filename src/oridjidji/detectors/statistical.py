@@ -163,6 +163,7 @@ class StatisticalDetector:
                 "total_tokens": scores.total_tokens or scores.n_tokens,
                 "scored_tokens": scores.scored_tokens or scores.n_tokens,
                 "coverage": scores.coverage,
+                "scored_chars": getattr(scores, "scored_chars", None),
             },
         )
 

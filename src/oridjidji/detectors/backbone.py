@@ -161,6 +161,10 @@ class ReducedScores:
     total_tokens: int | None = None
     scored_tokens: int | None = None
     window_policy: str = "prefix160"
+    #: End character of the last scored token when the scored tokens are one prefix of the
+    #: text, so the UI can name the part of a document the score is about. `None`
+    #: for a discontinuous policy, which reads a beginning and an end rather than a prefix.
+    scored_chars: int | None = None
 
     def __post_init__(self) -> None:
         n = len(self.token_ids)

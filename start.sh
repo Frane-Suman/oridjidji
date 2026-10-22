@@ -23,11 +23,11 @@ export ORIDJIDJI_SKIP_BUNDLE_VERIFY=1
 
 echo "Oriđiđi - demonstracija"
 echo
-printf '\033[90mNačin rada: osnovni. Učitavanje modela traje oko 30 sekundi,\033[0m\n'
-printf '\033[90manaliza pola sekunde.\033[0m\n'
+printf '\033[90mNačin rada: osnovni. Učitavanje modela traje nekoliko desetaka sekundi,\033[0m\n'
+printf '\033[90manaliza oko desetinke sekunde.\033[0m\n'
 echo
 
-uv run oridjidji serve --profile demo --candidate-root "$MODELI" --warmup &
+uv run oridjidji serve --profile basic --candidate-root "$MODELI" --warmup &
 POSLUZITELJ=$!
 trap 'kill "$POSLUZITELJ" 2>/dev/null || true' EXIT INT TERM
 

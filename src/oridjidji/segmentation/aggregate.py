@@ -18,10 +18,7 @@ a value neither author produced.
 1. A word covered by **no** scoreable window has **no score** — it renders as *insufficient
    signal*, never as a low one. `SpanScore.score is None` is the only representation of that,
    so a template cannot accidentally print 0.0.
-2. Segment intervals are **visibly wider** than the document's. Windows are short and their
-   scores are correspondingly less reliable; showing them with document-width intervals would
-   claim a precision the window length cannot support.
-3. **A segment never produces a verdict.** There is no `verdict` on `SpanScore` and no
+2. **A segment never produces a verdict.** There is no `verdict` on `SpanScore` and no
    function here returns one. The document verdict is the headline and the map is supporting
    evidence — so the type system, not a convention, is what prevents a caller from reading a
    span as an accusation.
@@ -33,15 +30,6 @@ import statistics
 from dataclasses import dataclass
 
 from oridjidji.segmentation.windows import Window
-
-#: How much wider a segment's interval is than the document's, per rule 2 above.
-#:
-#: **Not tuned, and deliberately crude.** The honest width would come from the length-ablation
-#: curve — how much noisier a score is at window length versus full length — which M9 measures
-#: and M7 does not have yet. Until then this is a stated floor on the extra uncertainty, and
-#: the docstring says so rather than implying it was derived. Erring wide is the safe
-#: direction: the cost of an over-narrow segment interval falls on someone being accused.
-SEGMENT_INTERVAL_WIDENING = 1.5
 
 
 @dataclass(frozen=True)
@@ -58,7 +46,6 @@ class SpanScore:
     end_char: int
     score: float | None
     n_windows: int
-    interval: tuple[float, float] | None = None
 
     @property
     def n_words(self) -> int:
@@ -74,8 +61,6 @@ def aggregate_windows(
     scores: list[float | None],
     *,
     total_words: int,
-    document_interval: tuple[float, float] | None = None,
-    segment_half_width: float | None = None,
 ) -> list[SpanScore]:
     """Per-word medians folded into contiguous spans.
 
@@ -115,7 +100,6 @@ def aggregate_windows(
                 end_char=bounds[index][1],
                 score=previous.score,
                 n_windows=previous.n_windows,
-                interval=previous.interval,
             )
             continue
         start_char, end_char = bounds[index]
@@ -127,34 +111,9 @@ def aggregate_windows(
                 end_char=end_char,
                 score=score,
                 n_windows=count,
-                interval=widen(score, document_interval, segment_half_width=segment_half_width),
             )
         )
     return spans
-
-
-def widen(
-    score: float | None,
-    document_interval: tuple[float, float] | None,
-    *,
-    segment_half_width: float | None = None,
-) -> tuple[float, float] | None:
-    """A segment interval: the document's, widened, and clipped to [0, 1].
-
-    Rule 2 of the specification Returns ``None`` when there is no score to put an interval around —
-    an interval without a point estimate would be a claim about nothing.
-    """
-    if score is None or document_interval is None:
-        return None
-    low, high = document_interval
-    half = (
-        segment_half_width
-        if segment_half_width is not None
-        else (high - low) / 2.0 * SEGMENT_INTERVAL_WIDENING
-    )
-    if half < 0.0:
-        raise ValueError("segment half-width must be non-negative")
-    return (max(0.0, score - half), min(1.0, score + half))
 
 
 def _mergeable(previous: SpanScore, score: float | None, count: int) -> bool:

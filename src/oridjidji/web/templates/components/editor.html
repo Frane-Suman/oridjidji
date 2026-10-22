@@ -4,13 +4,14 @@
   <label class="visually-hidden" for="tekst">{{ t("ui_editor_label") }}</label>
   <textarea id="tekst" data-testid="editor" x-model="text" placeholder="{{ t('ui_editor_placeholder') }}"
     lang="hr" spellcheck="true" :readonly="running"
-    :aria-describedby="running ? 'word-gate editor-readonly' : 'word-gate'"
+    :aria-describedby="running ? 'word-gate editor-scope editor-readonly' : 'word-gate editor-scope'"
     @keydown.ctrl.enter.prevent="analyse()" @keydown.meta.enter.prevent="analyse()"></textarea>
   <p id="editor-readonly" class="visually-hidden" x-show="running">{{ t("ui_editor_readonly") }}</p>
   <div class="editor-meta">
     <span class="data" data-wordcount x-text="wordCountLabel()"></span>
     <span id="word-gate" class="visually-hidden" x-text="wordGateMessage()"></span>
   </div>
+  <p id="editor-scope" class="field-help editor-scope" data-testid="editor-scope" x-text="scopeNotice()"></p>
   <fieldset class="mode-picker">
     <legend>{{ t("ui_mode_label") }}</legend>
     <div class="mode-cards">

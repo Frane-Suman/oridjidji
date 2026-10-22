@@ -1,7 +1,11 @@
 # LICENSES.md — obligations tracking
 
-Per-record provenance lives in the dataset itself (`licence` field, the specification). This file
-tracks the artefact-level obligations. Verified 2026-08-25 (an earlier decision…an earlier decision).
+This archive contains application code, interface assets and tests under the project's
+[MIT licence](../LICENSE), together with the fine-tuned Basic model and the calibrations of both
+modes (`models/`). It contains no research corpus, generated text or Gemma weights; those are
+not redistributed. The lists below record provenance and separate conditions for materials used
+in the research and optional runtime; they do not grant redistribution rights to materials
+absent here.
 
 ## Corpora
 
@@ -10,64 +14,53 @@ tracks the artefact-level obligations. Verified 2026-08-25 (an earlier decision�
 | **MaCoCu-Genre.hr (11356/1969)** | **CC0** | **PRIMARY human source, news domain**. No obligations; attribution given as good practice |
 | **ZNANJE / dabar_hr** (`procesaur/znanje`) | **CC-BY-SA-4.0** | **Academic domain, admitted** after Dabar OAI-PMH supplied publication years and post-2021/undated records were excluded. Attribution + **share-alike** |
 | Dabar OAI-PMH metadata (dabar.srce.hr) | public repository metadata | publication years only; cite Dabar as the metadata source |
-| hrWaC 2.1 (11356/1064) | CC-BY-SA-4.0 | **Not used for the dataset** — disqualified. E4 LM-calibration text only |
+| hrWaC 2.1 (11356/1064) | CC-BY-SA-4.0 | **Not used for the dataset.** Used only as language-model calibration text in development |
 | MaCoCu-hr 2.0 (11356/1806) | CC0 | crawl-date/quality evidence probe only |
 | CLASSLA-web.hr 1.0 / 2.0 | CC0 | not used (vertical format; 2.0 is a post-ChatGPT crawl) |
 
-**Consequence for the released dataset.** The news half is CC0, but the
-academic half inherits ZNANJE's **CC-BY-SA-4.0**, so the combined release is
-**CC-BY-SA-4.0**. Two honest options, to be decided before publication and recorded
-as a DECISIONS entry:
-- release the whole dataset CC-BY-SA-4.0 (simplest, share-alike propagates), or
-- release the **news half separately under CC0** and the academic half under
-  CC-BY-SA-4.0, which maximises reuse of the larger, cleaner portion.
+The dataset is **not** distributed with this code. A future release of corpus records needs
+its own provenance, attribution and redistribution review, especially for ZNANJE and
+generator outputs. The MIT licence on this repository does not apply to those records.
 
-Note this is *better* than the pre-M2 position: under an earlier decision's hrWaC plan the entire
-dataset was share-alike, because hrWaC is CC-BY-SA-4.0.
-
-The current additive E12 repository has **11,226 records** and preserves the licence and
-source fields of each human record and human twin. Its 2,302 supplemental AI records also
-retain generator/model provenance and the applicable model or provider terms. The repository
-is an internal, versioned research artefact; publishing it still requires the release-format
-decision above and a separate redistribution check for Vicuna generations.
+The private development repository has **11,226 records** and preserves the licence and
+source fields of each human record and human twin. Its AI records also retain
+generator/model provenance and the applicable model or provider terms. It is an internal,
+versioned research artefact and is absent from this archive.
 
 ## Models
 
 | Model | Licence | Note |
 |---|---|---|
-| classla/xlm-r-bertic | **CC-BY-SA-4.0** | historical E1 comparison winner; a released fine-tune of it must be share-alike |
-| classla/bcms-bertic | Apache-2.0 | selected E12 supervised encoder candidate |
-| Qwen/Qwen3-1.7B(-Base) | Apache-2.0 | completed owned-Q4 comparison pair; retained as research evidence and a faster non-selected alternative |
-| google/gemma-2-2b(-it) | Gemma licence | selected owned-Q4 Advanced observer/performer pair; verify redistribution conditions whenever the local serving package is copied or released |
+| classla/bcms-bertic | Apache-2.0 | base of the Basic encoder; the fine-tuned ONNX model in `models/basic` is derived from it |
+| classla/xlm-r-bertic | **CC-BY-SA-4.0** | encoder compared in development; a released fine-tune of it must be share-alike |
+| Qwen/Qwen3-1.7B(-Base) | Apache-2.0 | compared as an alternative Q4 backbone; retained as research evidence and a faster non-selected alternative |
+| google/gemma-2-2b(-it) | Gemma Terms of Use | Advanced observer/performer pair (Q4_K_M). **Not redistributed**: `install.ps1` downloads the weights from Hugging Face with the user's token and quantizes them locally; the user must accept the Gemma terms |
 | microsoft/mdeberta-v3-base · FacebookAI/xlm-roberta-base | MIT | |
 | permitt/galton-modernbertic-base · BSC-LT/mRoBERTa | Apache-2.0 | |
 | EuroLLM-1.7B(-Instruct) · EuroMoE-2.6B | Apache-2.0 | |
 | BSC-LT/salamandra-2b(-instruct) | Apache-2.0 | hrWaC in pretraining |
 | mistralai/Mistral-7B-Instruct-v0.2 · RWKV/v5-Eagle-7B-HF | Apache-2.0 | |
 | lmsys/vicuna-13b-v1.5 | **Llama 2 Community License** | check redistribution terms before publishing its generations in the dataset |
-| Gemini / Groq-served models | provider ToS | holdout generations: verify each provider's output-redistribution terms in M3 before the dataset is published |
+| API-served models | provider terms | verify each provider's output-redistribution terms before any dataset is published |
 
-### Exact open-weight pins reserved for M9 `final_challenge`
+### Open-weight generators of the evaluation
 
-These four repositories were read-only verified on 2026-09-13. The identities are frozen in
-`configs/evaluation/m9_final_generators.yaml`; pinning a model does not grant permission to
-redistribute its weights or outputs.
+The generation registry and generation outputs are not part of this archive. Naming a model
+does not grant permission to redistribute its weights or outputs.
 
-| Exact model identity | Licence recorded by the audited repository | M9 obligation |
+| Model | Licence | Obligation |
 |---|---|---|
-| `mistralai/Mistral-7B-Instruct-v0.2@63a8b081895390a26e140280378bc85ec8bce07a` | Apache-2.0 | retain the exact model/revision provenance with each generated record |
-| `lmsys/vicuna-13b-v1.5@c8327bf999adbd2efe2e75f6509fa01436100dc2` | Llama 2 Community License | review output redistribution before any final dataset release |
-| `utter-project/EuroLLM-1.7B-Instruct@a25c7fa65fc2a644e6270b8940dbe295b51da681` | Apache-2.0 | retain the exact model/revision provenance with each generated record |
-| `google/gemma-4-12B-it@707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7` | Apache-2.0; Gemma Terms of Use also apply | review the additional terms before generation, copying weights or releasing outputs |
+| `mistralai/Mistral-7B-Instruct-v0.2` | Apache-2.0 | retain model provenance with each generated record |
+| `lmsys/vicuna-13b-v1.5` | Llama 2 Community License | review output redistribution before any dataset release |
+| `utter-project/EuroLLM-1.7B-Instruct` | Apache-2.0 | retain model provenance with each generated record |
+| `google/gemma-4-12B-it` | Apache-2.0 | retain model provenance; this archive contains no generated output |
 
-Only EuroLLM explicitly declares Croatian in the audited model metadata. Mistral, Vicuna and
-Gemma do not make that metadata claim; their inclusion is based on project-measured E12 output,
-not an inferred language-support promise. All four repositories were ungated when checked.
+Only EuroLLM explicitly declares Croatian in its model metadata. Mistral, Vicuna and
+Gemma do not make that claim; their inclusion is based on inspection of their outputs, not on
+an inferred language-support promise.
 
-The `modern_final` section of the registry intentionally contains no API model IDs. Its status
-is `verification_required`: the exact official catalogue identity, catalogue date,
-request/response evidence and provider output terms must be frozen before any paid or free API
-generation begins.
+The final set also contains texts from three API-served models (Claude Haiku 4.5, Qwen3.8-27B
+and GPT-OSS-120B). Those records are not included in this archive.
 
 ## Code we learned from (never copied)
 
@@ -82,11 +75,12 @@ generation begins.
 
 | Artefact | Licence | Note |
 |---|---|---|
-| hunspell-hr dictionaries | GPL-2.0 / LGPL-2.1 / MPL-1.1 tri-licence | stated only in `README_hr_HR.txt` (repo has no LICENSE file) — cite the README; fetched as runtime data (an earlier decision, sha256 recorded), never committed |
-| CLASSLA-Stanza (pip `classla` 2.2.1, optional extra) | Apache-2.0 | an earlier decision |
+| llama.cpp (ggml-org) | MIT | cloned and built by `install.ps1` for Q4_K_M quantization and inference of the Advanced mode; not included in the archive |
+| hunspell-hr dictionaries | GPL-2.0 / LGPL-2.1 / MPL-1.1 tri-licence | stated only in `README_hr_HR.txt` (repo has no LICENSE file) — cite the README; fetched as runtime data (SHA-256 printed on download), never committed |
+| CLASSLA-Stanza (pip `classla`, optional extra) | Apache-2.0 | optional morphology extra |
 | UTS #39 confusables.txt (Unicode 17.0.0) | Unicode License | derived map committed at `preprocessing/data/confusables_map.json` with provenance header |
-| spylls 0.1.7 | MIT | pure-Python hunspell reader |
-| lingua-language-detector 2.1.1 | Apache-2.0 | language ID, offline |
+| spylls | MIT | pure-Python hunspell reader |
+| lingua-language-detector | Apache-2.0 | language ID, offline |
 
 ## Web fonts and visual assets
 
@@ -95,7 +89,7 @@ generation begins.
 | Archivo WOFF2, Latin and Latin Extended | SIL Open Font License 1.1 | served locally; OFL text is stored beside the font files |
 | IBM Plex Sans WOFF2, Latin and Latin Extended | SIL Open Font License 1.1 | served locally; OFL text is stored beside the font files |
 | IBM Plex Mono WOFF2, Latin and Latin Extended | SIL Open Font License 1.1 | served locally; OFL text is stored beside the font files |
-| Oriđiđi logo animation and derived mark | thesis author asset | original 27.4 MB GIF remains an unserved, gitignored source; the web app serves derived WebP/SVG variants |
+| Oriđiđi logo animation and derived mark | thesis author asset | the original GIF is not included; the web app serves derived WebP/SVG variants |
 
 The font files come from the official Google Fonts distribution (`fonts.gstatic.com`), and
 their licence texts come from the corresponding directories in the official `google/fonts`
@@ -103,7 +97,6 @@ repository. The subsets include the Croatian glyphs č, ć, đ, š and ž.
 
 ## This repository
 
-Code licence: **author's choice, still open** — recommendation: MIT for code, with
-the academic dataset component released under CC-BY-SA-4.0 (required by ZNANJE) and the
-CC0 news component separable where practical. Decide before
-the repo goes public; record as a DECISIONS entry.
+The application code is licensed under **MIT**; see [LICENSE](../LICENSE). The project
+licence does not replace licences of fonts, third-party libraries, model weights
+or research data.

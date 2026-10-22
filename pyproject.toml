@@ -140,6 +140,7 @@ module = [
     "transformers.*",
     "optimum.*",
     "onnxruntime.*",
+    "llama_cpp.*",
 ]
 ignore_missing_imports = true
 # Keep these libraries opaque. transformers 4.57 ships enough typing for mypy to follow it,

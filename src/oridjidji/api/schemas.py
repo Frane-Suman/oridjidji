@@ -4,16 +4,14 @@ Kept apart from `oridjidji.schemas`, which holds the domain models — a corpus 
 and a preprocessed document exist whether or not anything is served over HTTP. This
 module is the wire format, and the split keeps either file explainable in a sentence.
 
-Written before the detectors exist, deliberately. The specification fixes the response shape, so
-typing it now gives M4–M7 a target to fill rather than a shape to invent, and lets the
-Tier-0 demo path be exercised against a stub — the same stub-first discipline
-an earlier decision applied to generation.
+The typed response keeps the serving contract stable across real and stub runtimes.
 
 Two rules from the specification are enforced here rather than left to the UI to remember:
 
-* **No absolute verdict.** `p_ai` never travels without `interval`, and `verdict` is
-  the three-state enum, so `INCONCLUSIVE` is a value the type system knows about
-  rather than an error path someone has to think of.
+* **No absolute verdict.** `p_ai` is a calibrated probability that always travels with
+  the class-conditional conformal `prediction_set` and the three-state `verdict` derived
+  from it, so `INCONCLUSIVE` is a value the type system knows about rather than an error
+  path someone has to think of. No heuristic range is reported.
 * **The disclaimer is not optional.** `disclaimer_hr` and `limitations_hr` are
   required fields with no defaults on the response, so a caller cannot construct a
   result that omits them.
@@ -102,6 +100,22 @@ class Gates(BaseModel):
     language_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     language_accepted: bool | None = None
     is_bcs: bool | None = None
+
+
+class AnalysedScope(BaseModel):
+    """Which part of the submitted text the estimate is about.
+
+    The encoder reads only the opening `max_tokens` and the statistical detectors only their
+    prefix window, so a long document is judged on its beginning. Counts are words as the
+    editor counts them; `None` means that detector did not take part or read a
+    non-contiguous sample.
+    """
+
+    n_words: int = Field(ge=0)
+    encoder_words: int | None = Field(default=None, ge=0)
+    statistical_words: int | None = Field(default=None, ge=0)
+    statistical_used: bool = False
+    whole_text: bool
 
 
 class Explanations(BaseModel):
@@ -206,9 +220,11 @@ class AgentEvidence(BaseModel):
 class AnalyzeResponse(BaseModel):
     """The analysis result.
 
-    `p_ai` and `interval` are both required and validated against each other: a point
-    estimate without its interval is exactly the absolute verdict the specification forbids, so the
-    type refuses to express one.
+    `p_ai` is the calibrated probability; `verdict` is decided by the class-conditional
+    conformal `prediction_set`, and `operating_decision_ai` is the separate frozen binary
+    operating threshold. The former heuristic `interval` (a ±0.10 display band) is no longer
+    part of the response; stored history responses that still contain it
+    validate because unknown keys are ignored.
     """
 
     run_id: str
@@ -217,9 +233,11 @@ class AnalyzeResponse(BaseModel):
     verdict: Verdict
     p_ai: float = Field(ge=0.0, le=1.0)
     operating_decision_ai: bool
-    interval: tuple[float, float]
     prediction_set: list[str]
     gates: Gates
+    # Optional so history rows stored earlier still validate.
+    scope: AnalysedScope | None = None
+    scope_hr: str = ""
     agents: list[AgentResult] = Field(default_factory=list)
     agent_evidence: list[AgentEvidence] = Field(default_factory=list)
     assessment_agents_used: int = Field(ge=0)
@@ -237,11 +255,6 @@ class AnalyzeResponse(BaseModel):
     elapsed_ms: int = 0
 
     def model_post_init(self, _context: object) -> None:
-        low, high = self.interval
-        if not 0.0 <= low <= high <= 1.0:
-            raise ValueError(f"interval must be an ordered pair within [0, 1], got {self.interval}")
-        if not low <= self.p_ai <= high:
-            raise ValueError(f"p_ai {self.p_ai} lies outside its own interval {self.interval}")
         if not self.limitations_hr:
             raise ValueError("limitations_hr must not be empty — the panel is furniture")
         if self.assessment_agents_used > self.assessment_agents_total:

@@ -74,6 +74,13 @@ def demo_check(
             help="Root used to resolve relative paths in a portable candidate profile.",
         ),
     ] = None,
+    basic_only: Annotated[
+        bool,
+        typer.Option(
+            "--basic-only",
+            help="Require only Basic mode (Advanced has not been installed).",
+        ),
+    ] = False,
 ) -> None:
     """Verify that the localhost demo exposes working Basic and Advanced contracts."""
     from oridjidji.api.preflight import inspect_local_demo, read_smoke_text
@@ -85,6 +92,7 @@ def demo_check(
         result = inspect_local_demo(
             profile,
             smoke_text=read_smoke_text(smoke) if smoke is not None else None,
+            require_advanced=not basic_only,
         )
     finally:
         if candidate_root is not None:

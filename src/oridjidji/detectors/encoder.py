@@ -10,8 +10,8 @@ Here the session is built once and held.
 
 **The score this returns is not a probability.** It is the softmax output of a network
 trained with cross-entropy, which is a well-known overconfident quantity — and nothing
-has yet mapped it onto observed frequencies of being right. The specification requires a *calibrated*
-probability with an interval, and the specification requires the abstention zone to come from split
+has yet mapped it onto observed frequencies of being right. the specification requires a *calibrated*
+probability, and the specification requires the abstention zone to come from split
 conformal prediction. Both arrive in M6. Until then this is a detector score in its own
 native scale, exactly as `AgentResult.score` is documented to be, and the fusion layer
 above it must refuse to present it as anything more.
@@ -213,7 +213,7 @@ class EncoderDetector:
         started = time.perf_counter()
         try:
             self.load()
-            score = self._forward(text)
+            score, coverage = self._forward(text)
         except Exception as exc:  # noqa: BLE001 — see docstring: this is the degrade path
             return AgentResult(
                 name=self.name,
@@ -233,15 +233,39 @@ class EncoderDetector:
                 "BERTićev rezultat ulazi u hrvatski kalibriranu završnu procjenu; viša "
                 "vrijednost znači više strojnog signala."
             ),
+            token_data=coverage,
         )
 
-    def _forward(self, text: str) -> float:
-        """Softmax over the two logits, machine class. Uncalibrated — see module docs."""
+    def _forward(self, text: str) -> tuple[float, dict[str, Any]]:
+        """Softmax over the two logits, machine class, and what the window covered.
+
+        The score is uncalibrated — see module docs. The coverage says how much of the
+        text the score is about: the window keeps only the opening `max_tokens`, so a long
+        document is judged on its beginning, and the UI must say so. The same keys
+        as the statistical detectors carry, plus `scored_chars`, the end of the last read
+        token in the text this method was given.
+        """
         import numpy as np
 
         encoded = self._tokenizer(
-            text, truncation=True, max_length=self.max_tokens, return_tensors="pt"
+            text,
+            truncation=True,
+            max_length=self.max_tokens,
+            return_tensors="pt",
+            return_offsets_mapping=True,
         )
+        offsets = encoded.pop("offset_mapping")[0].tolist()
         logits = self._model(**encoded).logits.numpy()
         shifted = np.exp(logits - logits.max(axis=-1, keepdims=True))
-        return float((shifted / shifted.sum(axis=-1, keepdims=True))[0, 1])
+        score = float((shifted / shifted.sum(axis=-1, keepdims=True))[0, 1])
+        special = self._tokenizer.num_special_tokens_to_add(pair=False)
+        scored = max(len(offsets) - special, 0)
+        total = len(self._tokenizer(text, add_special_tokens=False)["input_ids"])
+        coverage = {
+            "window_policy": f"prefix{self.max_tokens}",
+            "total_tokens": total,
+            "scored_tokens": scored,
+            "coverage": scored / total if total else 0.0,
+            "scored_chars": max((end for _, end in offsets), default=0),
+        }
+        return score, coverage

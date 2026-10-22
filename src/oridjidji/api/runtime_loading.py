@@ -52,9 +52,9 @@ def _statistical_contract(
 def resolve_n_gpu_layers(cfg: AppConfig) -> int:
     """llama.cpp layers to offload: none unless the profile or the environment asks.
 
-    The laptop stays CPU-only by construction. The sealed M9 scoring run happens on a
+    The laptop stays CPU-only by construction. The final-set scoring run happens on a
     Colab GPU, where the two Gemma Q4_K_M models are the whole cost, so that run sets
-    `ORIDJIDJI_N_GPU_LAYERS=-1`. Reading it here keeps the frozen profile file untouched.
+    `ORIDJIDJI_N_GPU_LAYERS=-1`. Reading it here keeps the profile file untouched.
     """
     import os
 

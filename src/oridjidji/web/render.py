@@ -45,16 +45,6 @@ def hr_percent(fraction: float, decimals: int = 1) -> str:
     return hr_number(fraction * 100.0, decimals)
 
 
-def interval_line(interval: tuple[float, float]) -> str:
-    """`interval pouzdanosti 64,1 – 88,2 %` — en dash, Croatian decimals.
-
-    A percentage without its interval is a bug, so this string is not optional
-    anywhere a point estimate appears.
-    """
-    low, high = interval
-    return get_message("ui_result_interval", low=hr_percent(low), high=hr_percent(high))
-
-
 def zone_for(verdict: str) -> str:
     """CSS zone for a verdict the API decided. Unknown verdicts fail loudly.
 
@@ -67,7 +57,7 @@ def zone_for(verdict: str) -> str:
 
 
 def headline_for(verdict: str) -> str:
-    """The the specification headline. Never says "human" — see the note in `i18n.py`."""
+    """The Croatian headline. Never says "human" — see the note in `i18n.py`."""
     return MESSAGES_HR[VERDICT_MESSAGE_KEYS[verdict]]
 
 
@@ -124,7 +114,6 @@ def result_context(
     *,
     verdict: str,
     p_ai: float,
-    interval: tuple[float, float],
     n_words: int,
     agents_used: int,
     agents_total: int,
@@ -137,15 +126,12 @@ def result_context(
     agent_evidence: list[dict[str, object]] | None = None,
     linguistic_evidence: list[dict[str, object]] | None = None,
     interpretation_hr: str | None = None,
+    scope_hr: str | None = None,
 ) -> dict[str, object]:
     """Everything `assessment.html` needs, with nothing left for the template to compute.
 
-    `low_pct` / `high_pct` are CSS `left` / `right` insets for the interval band, so the
-    rail shows the *width* of the uncertainty rather than only stating it. That is the
-    the specification test in visual form: a screenshot pasted into a disciplinary email should still
-    communicate that the answer has a range.
+    The rail marks only the calibrated estimate. No display band is drawn: it would not be a statistically grounded uncertainty estimate.
     """
-    low, high = interval
     headline = headline_for(verdict)
     prediction_count = len(prediction_set or [])
     if prediction_count == 1:
@@ -170,16 +156,9 @@ def result_context(
         "headline": headline,
         "estimate": hr_percent(p_ai),
         "estimate_pct": round(p_ai * 100.0, 2),
-        "interval_line": interval_line(interval),
-        "low": hr_percent(low),
-        "high": hr_percent(high),
-        "low_pct": round(low * 100.0, 2),
-        "high_pct": round((1.0 - high) * 100.0, 2),
         "rail_label": get_message(
             "ui_result_rail_label",
             estimate=hr_percent(p_ai),
-            low=hr_percent(low),
-            high=hr_percent(high),
             verdict=headline,
         ),
         "basis": get_message(
@@ -187,6 +166,7 @@ def result_context(
         )
         if agents_total
         else "",
+        "scope_hr": scope_hr or "",
         "inconclusive_body": MESSAGES_HR["ui_result_inconclusive_body"],
         "prediction_explanation": prediction_explanation,
         "interpretation_hr": interpretation_hr or get_message(interpretation_keys[verdict]),

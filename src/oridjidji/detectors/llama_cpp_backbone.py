@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Protocol, cast
 
@@ -15,6 +15,7 @@ from oridjidji.detectors.windowing import (
     WindowPolicy,
     combine_reduced,
     plan_word_aligned_windows,
+    prefix_scored_chars,
     word_starts_from_offsets,
 )
 
@@ -56,7 +57,7 @@ class PythonLlamaRuntime:
         from llama_cpp import Llama
 
         # 0 keeps every layer on the CPU, which is the laptop contract; -1 offloads all
-        # of them, which is what makes the sealed Colab scoring run finish.
+        # of them, which is what makes the Colab scoring run finish.
         self._model = Llama(
             model_path=str(model_path),
             n_ctx=n_ctx,
@@ -71,7 +72,7 @@ class PythonLlamaRuntime:
         return list(self._model.tokenize(text, add_bos=add_bos, special=special))
 
     def logits(self, token_ids: Sequence[int]) -> LogitArray:
-        self._model.reset()  # type: ignore[no-untyped-call]
+        self._model.reset()
         self._model.eval(list(token_ids))
         rows = np.asarray(self._model._scores, dtype=np.float32)
         if rows.shape[0] != len(token_ids):
@@ -80,7 +81,7 @@ class PythonLlamaRuntime:
 
     def complete(self, prompt: str, *, max_tokens: int = 120) -> str:
         """Generate a short Croatian explanation with the already-loaded instruct model."""
-        self._model.reset()  # type: ignore[no-untyped-call]
+        self._model.reset()
         response = cast(
             dict[str, Any],
             self._model.create_chat_completion(
@@ -330,13 +331,17 @@ class LlamaCppBackbone:
         total = len(ids) - 1
         full_word_starts = word_starts_from_offsets(text, list(offsets[1:]))
         parts: list[ReducedScores] = []
-        for window in plan_word_aligned_windows(total, full_word_starts, self.window_policy):
+        windows = plan_word_aligned_windows(total, full_word_starts, self.window_policy)
+        for window in windows:
             stop = window.target_stop + 1
             flags = full_word_starts[window.context_start : window.target_stop]
             reduced = self._window(ids[window.context_start : stop], flags)
             drop = window.context_tokens
             parts.append(_slice(reduced, drop))
-        return combine_reduced(parts, total_tokens=total, policy=self.window_policy)
+        return replace(
+            combine_reduced(parts, total_tokens=total, policy=self.window_policy),
+            scored_chars=prefix_scored_chars(windows, list(offsets[1:])),
+        )
 
     def close(self) -> None:
         if self.observer is not None:

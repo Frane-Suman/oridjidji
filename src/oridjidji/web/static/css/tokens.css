@@ -138,8 +138,8 @@
   --signal-orange: #f5821f; /* fills only — 2.6:1 on white, fails 1.4.11 as text */
   --orange-ink: #b85c00; /* the accessible orange: text, icons, 1px borders */
 
-  /* Interactive emphasis requested by the author. It is distinct from the measured
-     interval and appears only on controls and keyboard focus. */
+  /* Interactive emphasis requested by the author. It is distinct from the probability
+     rail and appears only on controls and keyboard focus. */
   --control-accent: #ca0b44;
   --focus: #ca0b44;
 
@@ -157,7 +157,7 @@
   --size-meta: 0.8125rem; /* 13/18 */
   --size-eyebrow: 0.6875rem; /* 11/16 — uppercase mono labels */
   --size-data-xl: 2.5rem; /* 40/44 — the probability number */
-  --size-data: 0.875rem; /* 14/20 — intervals, scores */
+  --size-data: 0.875rem; /* 14/20 — scores, status lines */
 
   --leading-display-xl: 3.25rem;
   --leading-display-l: 2.375rem;

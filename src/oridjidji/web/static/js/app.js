@@ -112,6 +112,14 @@ function oridjidji(config) {
       return config.wordCount.replace("{n_words}", this.words()).replace("{min_words}", config.minWords);
     },
 
+    scopeNotice() {
+      const scope = config.scope || {};
+      const notice = scope[this.mode] || scope.osnovni || "";
+      const count = this.words();
+      if (!notice || count <= Number(scope.encoderWords || 0)) return notice;
+      return `${notice} ${config.scopeLong.replace("{n_words}", count)}`;
+    },
+
     wordGateMessage() {
       const count = this.words();
       if (count < config.minWords) return config.remaining.replace("{remaining}", config.minWords - count);
@@ -382,10 +390,6 @@ function historyDetail(runId, config) {
     agentLabel(name) {
       const evidence = this.row?.response?.agent_evidence || [];
       return evidence.find((agent) => agent.name === name)?.label_hr || this.label(config.agentLabels, name);
-    },
-    interval(row) {
-      if (typeof row?.interval_low !== "number" || typeof row?.interval_high !== "number") return config.unknown;
-      return `${this.percent(row.interval_low)} – ${this.percent(row.interval_high)}`;
     },
     async load() {
       this.loading = true;

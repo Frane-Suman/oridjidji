@@ -15,7 +15,8 @@
       <dt>{{ t("ui_history_verdict") }}</dt><dd x-text="label(config.verdictLabels, row.verdict)"></dd>
       <dt>{{ t("ui_history_status") }}</dt><dd x-text="label(config.statusLabels, row.status)"></dd>
       <dt>{{ t("ui_history_probability") }}</dt><dd class="num" x-text="percent(row.p_ai)"></dd>
-      <dt>{{ t("ui_history_interval") }}</dt><dd class="num" x-text="interval(row)"></dd>
+      <template x-if="row.response?.scope_hr"><dt>{{ t("ui_scope_title") }}</dt></template>
+      <template x-if="row.response?.scope_hr"><dd data-testid="history-scope" x-text="row.response.scope_hr"></dd></template>
     </dl>
     <section x-show="row.warnings && row.warnings.length"><h2>{{ t("ui_result_warnings") }}</h2>
       <ul><template x-for="warning in row.warnings"><li x-text="warning"></li></template></ul></section>

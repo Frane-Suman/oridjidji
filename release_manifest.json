@@ -1,8 +1,8 @@
 {
   "version": "oridjidji-release-v1",
   "note": "Artefacts produced by this project. Download each file into the candidate root (default ./models) preserving its path, then verify its sha256. The Gemma-2-2B weights and tokenizer are NOT listed here: install.ps1 fetches them from Google's gated repository with your own Hugging Face token and quantises them locally, so this project redistributes nothing licensed under the Gemma Terms of Use.",
-  "base_url": "REPLACE_ME: https://github.com/<user>/<repo>/releases/download/<tag>",
-  "total_bytes": 443914998,
+  "base_url": "https://github.com/Frane-Suman/oridjidji/releases/download/modeli-1",
+  "total_bytes": 443914087,
   "files": [
     {
       "path": "advanced/calibration/fusion.calibrator.json",
@@ -31,8 +31,8 @@
     },
     {
       "path": "advanced/fusion/artifact_manifest.json",
-      "bytes": 2441,
-      "sha256": "88ab2b49931f757dc470232d733e4e8c912af44747402225d282a0c52223be8e"
+      "bytes": 2217,
+      "sha256": "20aea048abecacc3c0c875cacb9eab76ee169390d9fa963ddf3695491598326c"
     },
     {
       "path": "advanced/fusion/ensemble.json",
@@ -47,7 +47,7 @@
     {
       "path": "advanced_candidate_manifest.json",
       "bytes": 4987,
-      "sha256": "afc7471e3dcd764a7d468cd8b3404d2c18563598ff1dc8b984f2028c3c22c998"
+      "sha256": "53c293a2634141ac5e6bb7e7048d30978748038ea33f4c98f7433db7cc51357b"
     },
     {
       "path": "basic/calibration/encoder.calibrator.json",
@@ -116,8 +116,8 @@
     },
     {
       "path": "basic/runtime_profile.yaml",
-      "bytes": 397,
-      "sha256": "fc47a60d7e2d913a7f7d8097eca507bed6601f752d98b8d0486e74c9231d8a5b"
+      "bytes": 382,
+      "sha256": "25f5c7a926ac6b370142023edf66deacae93b0baf3fe1875a305efce9e594834"
     },
     {
       "path": "evidence/gemma2_2b.cpu_benchmark.t12.r20.json",
@@ -126,8 +126,8 @@
     },
     {
       "path": "evidence/q4_backbone_decision.json",
-      "bytes": 12230,
-      "sha256": "2b7da2a8ca9e5b78ebe4e02d943e7538d903210cee7760bd55bd3bf432aa2013"
+      "bytes": 11558,
+      "sha256": "b9c12224dcbbf594d4bae844c9c8fc26d9f7ec9276a1a57d5b1a6d1b3eeb202d"
     }
   ]
 }

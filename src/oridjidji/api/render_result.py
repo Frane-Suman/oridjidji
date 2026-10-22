@@ -117,7 +117,6 @@ def result_fragment(response: Any, templates: Any) -> str:
     context = render.result_context(
         verdict=str(_value(response.verdict)),
         p_ai=response.p_ai,
-        interval=response.interval,
         n_words=response.gates.n_words,
         agents_used=len(usable),
         agents_total=len(assessment),
@@ -130,6 +129,7 @@ def result_fragment(response: Any, templates: Any) -> str:
         agent_evidence=assessment,
         linguistic_evidence=linguistic,
         interpretation_hr=response.interpretation_hr,
+        scope_hr=getattr(response, "scope_hr", ""),
     )
     explanations = response.explanations.model_dump(mode="json")
     explanations["token_heatmap"] = [

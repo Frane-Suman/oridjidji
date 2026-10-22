@@ -205,7 +205,6 @@ code, pre, .data, .num { font-family: var(--font-data); font-variant-numeric: ta
 .executed-mode { margin-bottom: var(--space-2); }
 .headline { margin-bottom: var(--space-4); font-size: var(--size-display-xl); line-height: var(--leading-display-xl); letter-spacing: var(--tracking-display-xl); font-weight: 800; }
 .estimate { margin: 0; font-size: var(--size-data-xl); line-height: var(--leading-data-xl); font-weight: 500; }
-.interval { margin: var(--space-1) 0 0; color: var(--slate); font-size: var(--size-data); }
 .result-interpretation { margin: var(--space-4) 0; max-width: var(--measure); }
 .result-interpretation h3, .text-signal-map h3 { font-size: var(--size-body); line-height: var(--leading-body); }
 .result-interpretation p, .signal-map-heading p { margin: var(--space-1) 0 0; color: var(--slate); }
@@ -240,10 +239,6 @@ code, pre, .data, .num { font-family: var(--font-data); font-variant-numeric: ta
   position: relative; height: var(--space-6); overflow: hidden;
   background: linear-gradient(90deg, rgba(245, 130, 31, 0.12), rgba(216, 30, 52, 0.12));
   border: var(--hairline) solid var(--rule); border-radius: var(--radius-sm);
-}
-.rail-interval {
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, var(--signal-yellow) 0%, var(--signal-orange) 35%, var(--signal-red) 72%, var(--control-accent) 100%);
 }
 .rail-marker { position: absolute; top: calc(-1 * var(--space-1)); bottom: calc(-1 * var(--space-1)); width: var(--marker-width); background: var(--ink); transition: left var(--dur-slow) var(--ease-arrow); }
 .rail-scale { display: flex; justify-content: space-between; margin-top: var(--space-2); color: var(--slate); font-family: var(--font-data); font-size: var(--size-meta); }

@@ -48,12 +48,16 @@ def _post(client: TestClient, mode: str, text: str) -> SmokeResult:
     )
 
 
-def inspect_local_demo(profile: str, *, smoke_text: str | None = None) -> DemoPreflight:
+def inspect_local_demo(
+    profile: str, *, smoke_text: str | None = None, require_advanced: bool = True
+) -> DemoPreflight:
     """Verify the live API contract and optionally score one document in each mode.
 
     ``research_only`` is accepted for Advanced: it qualifies the evidence and never
     disables the mode.  The check requires the A1+A2+A3 document path, while segment
-    reliability remains an independently reported optional capability.
+    reliability remains an independently reported optional capability. With
+    ``require_advanced=False`` only the Basic path is required, for installations
+    where the optional Advanced layer has not been prepared.
     """
     from oridjidji.api.app import create_app
 
@@ -73,7 +77,7 @@ def inspect_local_demo(profile: str, *, smoke_text: str | None = None) -> DemoPr
                     route_methods.add((path, str(method)))
             errors: list[str] = []
             expected_modes = ["osnovni", "napredni"]
-            if list(config.modes) != expected_modes:
+            if require_advanced and list(config.modes) != expected_modes:
                 errors.append("API does not expose both Basic and Advanced modes")
             for path in ("/api/v1/analyze", "/api/v1/analyze/stream"):
                 if (path, "POST") not in route_methods:
@@ -82,17 +86,18 @@ def inspect_local_demo(profile: str, *, smoke_text: str | None = None) -> DemoPr
             advanced = config.capabilities_by_mode.get("napredni", RuntimeCapabilities())
             if not basic.document_detection:
                 errors.append("Basic calibrated document detection is unavailable")
-            if not advanced.document_detection:
+            if require_advanced and not advanced.document_detection:
                 errors.append("Advanced fused document detection is unavailable")
-            if not advanced.statistical_evidence:
+            if require_advanced and not advanced.statistical_evidence:
                 errors.append("Advanced A2/A3 statistical evidence is unavailable")
 
             smoke: dict[str, SmokeResult] = {}
             if smoke_text is not None:
                 smoke = {
                     "osnovni": _post(client, "osnovni", smoke_text),
-                    "napredni": _post(client, "napredni", smoke_text),
                 }
+                if require_advanced:
+                    smoke["napredni"] = _post(client, "napredni", smoke_text)
                 for mode, result in smoke.items():
                     if result.status_code != 200:
                         errors.append(f"{mode} smoke request failed: {result.error}")

@@ -1,0 +1,26 @@
+profile: basic
+
+# The portable Basic-only serving profile (the `demo` profile adds Advanced mode).
+# Every artefact path is relative and is resolved against ORIDJIDJI_CANDIDATE_ROOT (or --candidate-root), so the same file works wherever the
+# weights were installed.
+#
+# min_word_count is the product gate: below it the system refuses to estimate rather than
+# return an unreliable probability. 100 is the shipped default. Do not lower it to the
+# value the final-set evaluation used - that was an admission floor for scoring a fixed
+# record set, not a statement about how short a text can usefully be judged.
+min_word_count: 100
+
+inference:
+  model_dir: basic/model
+  encoder_backend: onnx
+  max_tokens: 160
+  intra_op_threads: 8
+  calibration_dir: basic/calibration
+  encoder_candidate_manifest: basic/encoder_candidate_manifest.json
+
+  # Deliberately a name that does not exist: there is no single fused bundle in this
+  # distribution, and a missing bundle is not an error.
+  bundle_path: no-final-bundle.json
+
+  history_db: history/history.sqlite3
+  agent_timeout_s: 110.0

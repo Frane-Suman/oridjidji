@@ -6,7 +6,7 @@ profile: demo
 #
 # min_word_count is the product gate: below it the system refuses to estimate rather than
 # return an unreliable probability. 100 is the shipped default. Do not lower it to the
-# value the sealed evaluation used - that was an admission floor for scoring a fixed
+# value the final-set evaluation used - that was an admission floor for scoring a fixed
 # record set, not a statement about how short a text can usefully be judged.
 min_word_count: 100
 
